@@ -24,80 +24,222 @@ import {
   Zap,
   Sparkles,
   Palette,
+  Newspaper,
+  FileText,
+  Lock,
 } from "lucide-react";
 
-// ============================================================
-// 🚀 Currículo Web — Juan Mendes (Edição Ultra, enxuta)
-// Identidade forte, animações com parallax/tilt
-// - React + Tailwind + Framer Motion
-// - GitHub API (perfil, repositórios, métricas)
-// - LinkedIn: Cartão 3D (sem badge oficial)
-// - CEP no mapa: ViaCEP + Nominatim (OSM)
-// ============================================================
+/* ============================== TIPOS ============================== */
+type SectionTitleProps = {
+  icon?: React.ComponentType<{ className?: string }>;
+  title: string;
+  subtitle?: string;
+};
+
+type ContactItemProps = {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+  href?: string;
+  onClick?: () => void;
+  tooltip?: string;
+};
+
+type GitHubUser = {
+  login: string;
+  public_repos: number;
+  avatar_url?: string;
+  followers?: number;
+  public_gists?: number;
+  created_at?: string;
+};
+
+type GitHubRepo = {
+  id: number;
+  name: string;
+  html_url: string;
+  description?: string | null;
+  stargazers_count: number;
+  forks_count: number;
+  language?: string | null;
+  pushed_at: string;
+};
+
+type AchievementsData = {
+  followers: number;
+  public_repos: number;
+  public_gists: number;
+  since: number | null;
+  stars: number;
+};
+
+type BlogArticle = {
+  title: string;
+  url: string;
+  tags: string[];
+  Icon?: React.ComponentType<{ className?: string }>;
+};
+
+type Certificate = {
+  name: string;
+  issuer: string;
+  credential: string;
+};
+
+/* ============================== APP ============================== */
+// 🚀 Currículo Web — Juan Mendes (Mobile-First Overflow-Safe)
+// - Reset global anti-overflow + min-w-0 em todas as colunas/cartões
+// - Blog abaixo de Experiência
+// - CEP como badge (sem endereço)
+// - “Meu status musical” no Now Playing
 
 export default function PortfolioJuanMendes() {
   return (
     <div className="relative min-h-screen text-slate-100 overflow-x-hidden">
+      <GlobalOverflowReset />
       <AuroraBG />
       <CursorGlow />
       <GridFX />
       <ScrollProgress />
       <NavBar />
 
-      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden">
         <Hero />
         <ContactStrip />
         <AboutMe />
 
-        <div className="grid lg:grid-cols-3 gap-6 mt-10">
-          <div className="lg:col-span-2 space-y-6">
+        {/* GRID PRINCIPAL: min-w-0 em cada coluna */}
+        <div className="grid lg:grid-cols-3 gap-5 sm:gap-6 mt-8">
+          <div className="lg:col-span-2 space-y-5 sm:space-y-6 min-w-0">
             <ProjectsFromGitHub username="juanmmendes" />
             <TopLanguages username="juanmmendes" />
             <Experience />
+            <BlogArticles />
             <Education />
           </div>
-          <div className="space-y-6">
+          <div className="space-y-5 sm:space-y-6 min-w-0">
             <TechMarquee />
             <TechStack />
             <Achievements username="juanmmendes" />
             <LinkedInBadge vanity="juan-mendes-739084273" />
             <SteamCard />
             <NowPlaying />
-            <MapCEP cep="13189-210" />
+            <CepBadge cep="13189-210" />
           </div>
         </div>
 
         <Footer />
       </main>
 
-      {/* Smoke tests for runtime sanity (non-intrusive) */}
       <DevSmoke />
     </div>
   );
 }
 
-/* ============================== DECOR ============================== */
+/* ============================== RESET GLOBAL ============================== */
+function GlobalOverflowReset() {
+  return (
+    <style>{`
+      html, body { overflow-x: hidden; }
+      /* garante que filhos flex/grid não forcem largura */
+      * { min-width: 0; }
+      img, svg, video, canvas { max-width: 100%; height: auto; }
+      /* evita barra por causa de filter/blur/shadow */
+      .clip-content { overflow: hidden; }
+      /* evita largura > viewport por espaçamento de letras */
+      .no-track-overflow { word-break: break-word; overflow-wrap: anywhere; }
+    `}</style>
+  );
+}
+
+/* ============================== DECOR (overflow-safe) ============================== */
+/* ============================== DECOR (NEON PULSANTE COM FRAMER MOTION) ============================== */
 function AuroraBG() {
   return (
-    <div className="fixed inset-0 -z-20">
+    <div className="fixed inset-0 -z-20 clip-content pointer-events-none">
+      {/* fundo */}
       <div className="absolute inset-0 bg-black" />
-      <div className="absolute -top-32 left-0 w-[70vw] h-[70vw] bg-gradient-to-br from-fuchsia-500/35 via-violet-500/25 to-cyan-400/25 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute top-1/3 -right-20 w-[50vw] h-[50vw] bg-gradient-to-br from-indigo-600/30 via-sky-500/20 to-emerald-400/20 rounded-full blur-3xl animate-[pulse_9s_ease-in-out_infinite]" />
-      <div className="absolute bottom-[-10rem] left-1/4 w-[60vw] h-[60vw] bg-gradient-to-tr from-rose-500/25 via-fuchsia-400/20 to-amber-300/20 rounded-full blur-3xl animate-[pulse_12s_ease-in-out_infinite]" />
+
+      {/* BLOB 1 — topo/esquerda */}
+      <motion.div
+        className="absolute rounded-full blur-3xl bg-gradient-to-br from-fuchsia-500/35 via-violet-500/25 to-cyan-400/25"
+        style={{
+          top: '-20vw',
+          left: '-20vw',
+          width: '72vw',
+          height: '72vw',
+        }}
+        animate={{
+          // pulsa
+          scale: [0.95, 1.08, 0.95],
+          opacity: [0.7, 1, 0.7],
+          // gira contínuo
+          rotate: 360,
+        }}
+        transition={{
+          scale: { duration: 8, ease: 'easeInOut', repeat: Infinity },
+          opacity: { duration: 8, ease: 'easeInOut', repeat: Infinity },
+          rotate: { duration: 60, ease: 'linear', repeat: Infinity },
+        }}
+      />
+
+      {/* BLOB 2 — meio/direita */}
+      <motion.div
+        className="absolute rounded-full blur-3xl bg-gradient-to-br from-indigo-600/30 via-sky-500/20 to-emerald-400/20"
+        style={{
+          top: '33%',
+          right: '-10vw',
+          width: '56vw',
+          height: '56vw',
+        }}
+        animate={{
+          scale: [0.96, 1.06, 0.96],
+          opacity: [0.65, 0.95, 0.65],
+          rotate: -360,
+        }}
+        transition={{
+          scale: { duration: 10, ease: 'easeInOut', repeat: Infinity },
+          opacity: { duration: 10, ease: 'easeInOut', repeat: Infinity },
+          rotate: { duration: 72, ease: 'linear', repeat: Infinity },
+        }}
+      />
+
+      {/* BLOB 3 — baixo/centro */}
+      <motion.div
+        className="absolute rounded-full blur-3xl bg-gradient-to-tr from-rose-500/25 via-fuchsia-400/20 to-amber-300/20"
+        style={{
+          bottom: '-12vw',
+          left: '20%',
+          width: '68vw',
+          height: '68vw',
+        }}
+        animate={{
+          scale: [0.94, 1.07, 0.94],
+          opacity: [0.6, 0.9, 0.6],
+          rotate: 360,
+        }}
+        transition={{
+          scale: { duration: 12, ease: 'easeInOut', repeat: Infinity },
+          opacity: { duration: 12, ease: 'easeInOut', repeat: Infinity },
+          rotate: { duration: 84, ease: 'linear', repeat: Infinity },
+        }}
+      />
     </div>
   );
 }
 
+
+
 function GridFX() {
   return (
-    <div aria-hidden className="fixed inset-0 -z-10 opacity-[0.08]">
+    <div aria-hidden className="fixed inset-0 -z-10 opacity-[0.08] clip-content">
       <div
         className="w-full h-full"
         style={{
           backgroundImage:
             "linear-gradient(rgba(255,255,255,.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.15) 1px, transparent 1px)",
           backgroundSize: "40px 40px, 40px 40px",
-          backgroundPosition: "-1px -1px, -1px -1px",
+          backgroundPosition: "0 0, 0 0",
           maskImage:
             "radial-gradient(circle at 50% 30%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 75%)",
         }}
@@ -106,28 +248,30 @@ function GridFX() {
   );
 }
 
-// Glow que segue o cursor
+// Glow do cursor — container com overflow hidden
 function CursorGlow() {
   const [pos, setPos] = useState({ x: -9999, y: -9999 });
-
   useEffect(() => {
     const onMove = (e: PointerEvent) => setPos({ x: e.clientX, y: e.clientY });
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);
   }, []);
-
   const style = useMemo(
-    () => ({
-      left: pos.x - 250,
-      top: pos.y - 250,
-      background:
-        "radial-gradient(closest-side, rgba(99,102,241,.35), rgba(244,114,182,.22), rgba(34,211,238,0) 70%)",
-    }),
+    () =>
+      ({
+        left: pos.x - 200,
+        top: pos.y - 200,
+        position: "absolute",
+        background:
+          "radial-gradient(closest-side, rgba(99,102,241,.35), rgba(244,114,182,.22), rgba(34,211,238,0) 70%)",
+      } as React.CSSProperties),
     [pos]
   );
   return (
-    <div className="fixed inset-0 -z-[9] pointer-events-none" aria-hidden>
-      <div className="absolute w-[500px] h-[500px] blur-3xl opacity-50 mix-blend-soft-light" style={style} />
+    <div className="fixed inset-0 -z-[9] pointer-events-none clip-content" aria-hidden>
+      <div className="blur-3xl opacity-50 mix-blend-soft-light" style={style}>
+        <div className="w-[clamp(240px,40vw,520px)] aspect-square" />
+      </div>
     </div>
   );
 }
@@ -162,29 +306,21 @@ type CardProps = {
   tilt?: boolean;
 };
 
-
 function Card({ children, className = "", tilt = false }: CardProps) {
-
   const ref = useRef<HTMLDivElement | null>(null);
   const rotateX = useMotionValue(0);
   const rotateY = useMotionValue(0);
 
   function onMove(e: React.MouseEvent<HTMLDivElement>) {
-
     if (!tilt || !ref.current) return;
     const r = ref.current.getBoundingClientRect();
-    const x = e.clientX - r.left;
-    const y = e.clientY - r.top;
-    const px = x / r.width - 0.5;
-    const py = y / r.height - 0.5;
+    const px = (e.clientX - r.left) / r.width - 0.5;
+    const py = (e.clientY - r.top) / r.height - 0.5;
     rotateX.set(py * -8);
     rotateY.set(px * 8);
   }
+  function reset() { rotateX.set(0); rotateY.set(0); }
 
-  function reset() {
-    rotateX.set(0);
-    rotateY.set(0);
-  }
   return (
     <motion.div
       ref={ref}
@@ -196,26 +332,29 @@ function Card({ children, className = "", tilt = false }: CardProps) {
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.6 }}
       className={
-        "relative overflow-hidden rounded-3xl border border-white/15 bg-white/5 backdrop-blur-xl shadow-2xl " +
+        "relative rounded-3xl border border-white/15 bg-white/5 backdrop-blur-xl shadow-2xl overflow-hidden " +
         "before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent before:pointer-events-none " +
+        "max-w-full " +
         className
       }
     >
-      {/* brilho dinâmico */}
-      <div className="pointer-events-none absolute -inset-1 rounded-[inherit] bg-gradient-to-br from-fuchsia-500/10 via-indigo-500/10 to-cyan-400/10 blur-xl" />
-      <div className="relative p-5 sm:p-6">{children}</div>
+      {/* brilho dinâmico dentro do clipping */}
+      <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-br from-fuchsia-500/10 via-indigo-500/10 to-cyan-400/10 blur-xl" />
+      <div className="relative p-4 sm:p-6 min-w-0">{children}</div>
     </motion.div>
   );
 }
 
-function SectionTitle({ icon: Icon, title, subtitle }: any) {
+function SectionTitle({ icon: Icon, title, subtitle }: SectionTitleProps) {
   return (
-    <div className="flex items-center gap-3 mb-4">
-      {Icon ? <Icon className="w-5 h-5 text-indigo-300" /> : null}
-      <div>
-        <h3 className="text-lg font-semibold tracking-wide">{title}</h3>
+    <div className="flex items-start sm:items-center gap-3 mb-4 min-w-0">
+      {Icon ? <Icon className="w-5 h-5 text-indigo-300 shrink-0" /> : null}
+      <div className="min-w-0">
+        <h3 className="text-lg font-semibold tracking-wide leading-tight supports-[text-wrap:balance]:[text-wrap:balance]">
+          {title}
+        </h3>
         {subtitle ? (
-          <p className="text-sm text-slate-300/80 -mt-0.5">{subtitle}</p>
+          <p className="text-sm text-slate-300/80 mt-1 leading-snug break-words">{subtitle}</p>
         ) : null}
       </div>
     </div>
@@ -227,23 +366,25 @@ function NavBar() {
   return (
     <div className="sticky top-0 z-40 bg-black/50 backdrop-blur-xl border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           <LogoJM size={28} />
-          <span className="font-semibold tracking-wide">Juan Mendes • Full Stack & Automação</span>
+          <span className="font-semibold tracking-wide text-sm sm:text-base truncate">
+            Juan Mendes • Full Stack & Automação
+          </span>
         </div>
-        <div className="hidden sm:flex items-center gap-3 text-sm text-slate-300/90">
+        <nav className="hidden sm:flex items-center gap-3 text-sm text-slate-300/90">
           <a href="#projetos" className="hover:text-white">Projetos</a>
           <a href="#experiencia" className="hover:text-white">Experiência</a>
           <a href="#formacao" className="hover:text-white">Formação</a>
           <a href="#contatos" className="hover:text-white">Contato</a>
-        </div>
+        </nav>
       </div>
     </div>
   );
 }
 
-/* LOGO “J” (novo) */
-function LogoJM({ size = 40 }) {
+/* LOGO “J” */
+function LogoJM({ size = 40 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" className="drop-shadow-[0_0_12px_rgba(99,102,241,.35)]">
       <defs>
@@ -254,41 +395,31 @@ function LogoJM({ size = 40 }) {
         </linearGradient>
       </defs>
       <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#g)" opacity="0.15" />
-      {/* “J” estilizado */}
-      <path
-        d="M44 16v20a12 12 0 0 1-12 12h-8"
-        stroke="url(#g)"
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-      {/* detalhe base */}
+      <path d="M44 16v20a12 12 0 0 1-12 12h-8" stroke="url(#g)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
       <path d="M20 48h10" stroke="url(#g)" strokeWidth="3" strokeLinecap="round" opacity="0.7" />
     </svg>
   );
 }
 
-
 /* ============================== HERO ============================== */
 function Hero() {
   return (
-    <section className="pt-10 md:pt-14">
-      <Card className="relative" tilt>
-        <div className="grid lg:grid-cols-[1.15fr,0.85fr] gap-8 items-center">
-          <div>
+    <section className="pt-8 md:pt-12">
+      <Card tilt>
+        <div className="grid lg:grid-cols-[1.15fr,0.85fr] gap-6 lg:gap-8 items-center min-w-0">
+          <div className="min-w-0">
             <motion.h1
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-3xl md:text-5xl font-black tracking-tight"
+              className="text-2xl sm:text-3xl md:text-5xl font-black tracking-tight leading-tight supports-[text-wrap:balance]:[text-wrap:balance]"
             >
-              <span className="inline-flex items-center gap-3">
+              <span className="inline-flex items-center gap-3 min-w-0">
                 <LogoJM />
-                Juan Mendes
+                <span className="truncate">Juan Mendes</span>
               </span>
             </motion.h1>
-            <p className="mt-3 text-lg md:text-xl text-slate-200/90">
+            <p className="mt-3 text-base md:text-xl text-slate-200/90">
               Full Stack Developer • IA • Automação • BI • N8N
             </p>
             <p className="mt-4 text-slate-200/85 leading-relaxed max-w-3xl">
@@ -308,7 +439,7 @@ function Hero() {
             </div>
           </div>
 
-          <div className="relative">
+          <div className="relative min-w-0">
             <AvatarOrb username="juanmmendes" />
           </div>
         </div>
@@ -322,20 +453,19 @@ function AvatarOrb({ username }: { username: string }) {
   useEffect(() => {
     fetch(`https://api.github.com/users/${username}`)
       .then((r) => r.json())
-      .then((u) => setAvatar(u?.avatar_url))
+      .then((u: GitHubUser) => setAvatar(u?.avatar_url ?? null))
       .catch(() => {});
   }, [username]);
   return (
     <div className="relative aspect-square rounded-[2rem] border border-white/15 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
-      {/* orb animada */}
-      <div className="absolute -top-1/4 left-1/2 -translate-x-1/2 w-[140%] h-[140%] bg-gradient-to-br from-fuchsia-500/30 via-indigo-500/30 to-cyan-400/30 rounded-full blur-3xl animate-[spin_28s_linear_infinite]" />
-      {/* avatar */}
-      <div className="absolute inset-0 m-6 rounded-2xl bg-black/30 backdrop-blur flex items-center justify-center">
+      {/* orb fixa (sem translate/animate que vaza) */}
+      <div className="absolute inset-0 rounded-full blur-3xl bg-gradient-to-br from-fuchsia-500/30 via-indigo-500/30 to-cyan-400/30" />
+      <div className="absolute inset-0 m-4 sm:m-6 rounded-2xl bg-black/30 backdrop-blur flex items-center justify-center">
         {avatar ? (
-          <img src={avatar} alt="Avatar" className="w-40 h-40 rounded-full ring-4 ring-white/20 shadow-2xl object-cover" />
+          <img src={avatar} alt="Avatar" className="w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-full ring-4 ring-white/20 shadow-2xl object-cover" />
         ) : (
-          <div className="text-7xl">🧠</div>
+          <div className="text-6xl md:text-7xl">🧠</div>
         )}
       </div>
     </div>
@@ -349,7 +479,7 @@ function ContactStrip() {
     <section id="contatos" className="mt-6">
       <Card tilt>
         <SectionTitle icon={Network} title="Contato e Redes" subtitle="Respostas rápidas e colaboração" />
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 min-w-0">
           <ContactItem icon={Mail} label="E-mail" value="juan.zx016@gmail.com" href="mailto:juan.zx016@gmail.com" />
           <ContactItem icon={Phone} label="Telefone" value="(19) 99979-1601" href="tel:+5519999791601" />
           <ContactItem icon={MessageCircle} label="Discord" value="724413788203253773" onClick={() => copy("724413788203253773")} tooltip="Copiar ID" />
@@ -362,36 +492,29 @@ function ContactStrip() {
   );
 }
 
-function ContactItem({
-  icon: Icon,
-  label,
-  value,
-  href,
-  onClick,
-  tooltip,
-}: {
-  icon: any; label: string; value: string; href?: string; onClick?: () => void; tooltip?: string;
-}) {
+function ContactItem({ icon: Icon, label, value, href, onClick, tooltip }: ContactItemProps) {
   const content = (
     <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition border border-white/10 cursor-pointer">
-      <Icon className="w-4 h-4 text-indigo-300" />
-      <div>
+      <Icon className="w-4 h-4 text-indigo-300 shrink-0" />
+      <div className="min-w-0 flex-1">
         <div className="text-xs uppercase tracking-wider text-slate-300/80">{label}</div>
-        <div className="text-sm font-medium">{value}</div>
+        <div className="text-sm font-medium truncate">{value}</div>
       </div>
-      {href ? <ExternalLink className="w-3.5 h-3.5 ml-auto opacity-70" /> : null}
+      {href ? <ExternalLink className="w-3.5 h-3.5 ml-auto opacity-70 shrink-0" /> : null}
     </div>
   );
   return href ? (
-    <a href={href} target="_blank" rel="noreferrer" title={tooltip}>
+    <a href={href} target="_blank" rel="noreferrer" title={tooltip} className="block w-full">
       {content}
     </a>
   ) : (
-    <button onClick={onClick} title={tooltip} className="text-left">{content}</button>
+    <button onClick={onClick} title={tooltip} className="text-left w-full">
+      {content}
+    </button>
   );
 }
 
-/* ============================== TECH ============================== */
+/* ============================== DNA VISUAL (marquee safe) ============================== */
 function TechMarquee() {
   const items = [
     { Icon: Code2, label: "TypeScript" },
@@ -406,8 +529,9 @@ function TechMarquee() {
   return (
     <Card tilt>
       <SectionTitle icon={Palette} title="DNA Visual & Tech" subtitle="Marquee interativo com suas stacks principais" />
-      <div className="relative overflow-hidden rounded-xl">
-        <div className="flex gap-6 animate-[scrolllinear_18s_linear_infinite] will-change-transform">
+      <div className="relative overflow-x-hidden rounded-xl">
+        {/* trilho com largura grande, mas clipado */}
+        <div className="flex gap-3 sm:gap-6 animate-[scrolllinear_18s_linear_infinite] will-change-transform min-w-[200%]">
           {[...items, ...items, ...items].map((it, i) => (
             <div key={i} className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10">
               <it.Icon className="w-4 h-4 text-fuchsia-300" />
@@ -416,11 +540,13 @@ function TechMarquee() {
           ))}
         </div>
       </div>
-      <style>{`@keyframes scrolllinear { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }`}</style>
+      <style>{`@keyframes scrolllinear { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
+@media (prefers-reduced-motion: reduce) { .animate-[scrolllinear_18s_linear_infinite] { animation: none !important; } }`}</style>
     </Card>
   );
 }
 
+/* ============================== STACK ============================== */
 function TechStack() {
   const skills = [
     { icon: Code2, label: "Node.js / TypeScript" },
@@ -432,25 +558,16 @@ function TechStack() {
     { icon: TerminalSquare, label: "CI/CD • Filas" },
     { icon: Network, label: "Integrações Multicanal" },
   ];
-
-  const studies = [
-    "Ciência de Dados",
-    "Inteligência Artificial",
-    "Business Intelligence",
-    "Automação",
-    "Engenharia de Software",
-    "Cloud Computing",
-    "Segurança da Informação",
-  ];
+  const studies = ["Ciência de Dados", "Inteligência Artificial", "Business Intelligence", "Automação", "Engenharia de Software", "Cloud Computing", "Segurança da Informação"];
 
   return (
     <Card tilt>
       <SectionTitle icon={BadgeCheck} title="Stack & Foco" subtitle="Ferramentas e áreas que mais uso" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 min-w-0">
         {skills.map((s, i) => (
           <div key={i} className="flex items-center gap-3 rounded-xl p-3 bg-white/5 border border-white/10 hover:shadow-[0_0_0_1px_rgba(255,255,255,.15)]">
-            <s.icon className="w-4 h-4 text-teal-300" />
-            <span className="text-sm">{s.label}</span>
+            <s.icon className="w-4 h-4 text-teal-300 shrink-0" />
+            <span className="text-sm break-words">{s.label}</span>
           </div>
         ))}
       </div>
@@ -465,18 +582,18 @@ function TechStack() {
   );
 }
 
-/* ============================== GITHUB ============================== */
+/* ============================== PROJETOS EM DESTAQUE (GitHub) ============================== */
 function ProjectsFromGitHub({ username }: { username: string }) {
-  const [user, setUser] = useState<any>(null);
-  const [repos, setRepos] = useState<any[]>([]);
+  const [user, setUser] = useState<GitHubUser | null>(null);
+  const [repos, setRepos] = useState<GitHubRepo[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       try {
         const [u, r] = await Promise.all([
-          fetch(`https://api.github.com/users/${username}`).then((res) => res.json()),
-          fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`).then((res) => res.json()),
+          fetch(`https://api.github.com/users/${username}`).then((res) => res.json() as Promise<GitHubUser>),
+          fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=100`).then((res) => res.json() as Promise<GitHubRepo[]>),
         ]);
         setUser(u);
         const sorted = Array.isArray(r)
@@ -487,8 +604,8 @@ function ProjectsFromGitHub({ username }: { username: string }) {
             )
           : [];
         setRepos(sorted.slice(0, 6));
-      } catch (e) {
-        console.error(e);
+      } catch (err: unknown) {
+           console.error("[ProjectsFromGitHub] fetch failed:", err);
       } finally {
         setLoading(false);
       }
@@ -507,19 +624,19 @@ function ProjectsFromGitHub({ username }: { username: string }) {
         {loading ? (
           <div className="h-24 grid place-items-center text-slate-300">Carregando dados do GitHub…</div>
         ) : (
-          <div className="grid sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
             {repos.map((repo) => (
-              <a key={repo.id} href={repo.html_url} target="_blank" rel="noreferrer" className="group">
+              <a key={repo.id} href={repo.html_url} target="_blank" rel="noreferrer" className="group block min-w-0">
                 <div className="rounded-2xl p-4 bg-white/5 border border-white/10 hover:bg-white/10 transition h-full relative overflow-hidden">
-                  <div className="absolute -inset-0.5 bg-gradient-to-br from-fuchsia-500/0 via-indigo-500/0 to-cyan-400/0 group-hover:from-fuchsia-500/10 group-hover:via-indigo-500/10 group-hover:to-cyan-400/10 blur-xl" />
-                  <div className="relative flex items-center gap-2">
-                    <span className="text-sm font-semibold group-hover:text-white">{repo.name}</span>
-                    <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-500/0 via-indigo-500/0 to-cyan-400/0 group-hover:from-fuchsia-500/10 group-hover:via-indigo-500/10 group-hover:to-cyan-400/10 blur-xl" />
+                  <div className="relative flex items-center gap-2 min-w-0">
+                    <span className="text-sm font-semibold group-hover:text-white truncate">{repo.name}</span>
+                    <ExternalLink className="w-3.5 h-3.5 opacity-70 shrink-0" />
                   </div>
-                  <p className="relative text-sm text-slate-300/90 mt-1 line-clamp-2">
+                  <p className="relative text-sm text-slate-300/90 mt-1 break-words">
                     {repo.description || "Sem descrição."}
                   </p>
-                  <div className="relative mt-3 text-xs flex items-center gap-3 text-slate-300/80">
+                  <div className="relative mt-3 text-xs flex flex-wrap items-center gap-3 text-slate-300/80">
                     <span><Star className="inline w-3 h-3 mr-1" /> {repo.stargazers_count}</span>
                     <span>⬚ {repo.forks_count}</span>
                     {repo.language ? <span>⌘ {repo.language}</span> : null}
@@ -535,78 +652,32 @@ function ProjectsFromGitHub({ username }: { username: string }) {
   );
 }
 
-function Achievements({ username }: { username: string }) {
-  const [data, setData] = useState<any>(null);
-  useEffect(() => {
-    async function run() {
-      try {
-        const [u, r] = await Promise.all([
-          fetch(`https://api.github.com/users/${username}`).then((res) => res.json()),
-          fetch(`https://api.github.com/users/${username}/repos?per_page=100`).then((res) => res.json()),
-        ]);
-        const stars = (Array.isArray(r) ? r : []).reduce((acc, x) => acc + (x.stargazers_count || 0), 0);
-        setData({
-          followers: u?.followers || 0,
-          public_repos: u?.public_repos || 0,
-          public_gists: u?.public_gists || 0,
-          since: u?.created_at ? new Date(u.created_at).getFullYear() : null,
-          stars,
-        });
-      } catch {}
-    }
-    run();
-  }, [username]);
-
-  return (
-    <Card tilt>
-      <SectionTitle icon={Trophy} title="Conquistas & Números" subtitle="GitHub em tempo real" />
-      <div className="grid grid-cols-2 gap-3">
-        <Stat label="Followers" value={data?.followers ?? "—"} />
-        <Stat label="Repositórios" value={data?.public_repos ?? "—"} />
-        <Stat label="Stars (somadas)" value={data?.stars ?? "—"} />
-        <Stat label="Desde" value={data?.since ?? "—"} />
-      </div>
-    </Card>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="rounded-xl p-4 bg-white/5 border border-white/10">
-      <div className="text-xs uppercase tracking-wider text-slate-300/80">{label}</div>
-      <div className="mt-1 text-2xl font-bold">{value}</div>
-    </div>
-  );
-}
-
+/* ============================== LINGUAGENS EM EVIDÊNCIA ============================== */
 function TopLanguages({ username }: { username: string }) {
-  const [repos, setRepos] = useState<any[]>([]);
+  const [repos, setRepos] = useState<GitHubRepo[]>([]);
   useEffect(() => {
     fetch(`https://api.github.com/users/${username}/repos?per_page=100`)
-      .then((r) => r.json())
+      .then((r) => r.json() as Promise<GitHubRepo[]>)
       .then((data) => setRepos(Array.isArray(data) ? data : []))
       .catch(() => {});
   }, [username]);
 
   const langCount = useMemo(() => {
     const m = new Map<string, number>();
-    repos.forEach((r) => {
-      if (r.language) m.set(r.language, (m.get(r.language) || 0) + 1);
-    });
+    repos.forEach((r) => r.language && m.set(r.language, (m.get(r.language) || 0) + 1));
     return [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6);
   }, [repos]);
-
   const total = langCount.reduce((acc, [, c]) => acc + c, 0) || 1;
 
   return (
     <Card tilt>
       <SectionTitle icon={Palette} title="Linguagens em Evidência" subtitle="Distribuição por repositórios" />
-      <div className="space-y-3">
+      <div className="space-y-3 min-w-0">
         {langCount.map(([lang, count]) => (
-          <div key={lang}>
-            <div className="flex justify-between text-xs text-slate-300/80">
-              <span>{lang}</span>
-              <span>{Math.round((count / total) * 100)}%</span>
+          <div key={lang} className="min-w-0">
+            <div className="flex justify-between gap-3 text-xs text-slate-300/80">
+              <span className="truncate">{lang}</span>
+              <span className="shrink-0">{Math.round((count / total) * 100)}%</span>
             </div>
             <div className="h-2 mt-1 rounded-full bg-white/10 overflow-hidden">
               <div className="h-full bg-gradient-to-r from-fuchsia-400 via-indigo-400 to-cyan-300" style={{ width: `${(count / total) * 100}%` }} />
@@ -621,7 +692,7 @@ function TopLanguages({ username }: { username: string }) {
   );
 }
 
-/* ============================== EXPERIÊNCIA / FORMAÇÃO ============================== */
+/* ============================== EXPERIÊNCIA (timeline sem offsets) ============================== */
 function Experience() {
   const items = [
     {
@@ -660,27 +731,28 @@ function Experience() {
     <section id="experiencia">
       <Card tilt>
         <SectionTitle icon={BriefcaseIcon} title="Experiência" />
-        <ol className="relative border-s border-white/10 ml-3 pl-6 space-y-6">
+        <div className="space-y-5 min-w-0">
           {items.map((it, idx) => (
-            <li key={idx} className="relative">
-              <span className="absolute -left-3 top-1.5 w-2.5 h-2.5 rounded-full bg-gradient-to-br from-indigo-400 to-fuchsia-400 shadow" />
-              <div className="flex items-center gap-2">
-                <h4 className="font-semibold">{it.title}</h4>
+            <div key={idx} className="relative pl-5 border-l border-white/10 min-w-0">
+              {/* dot posicionado dentro do container (sem negativo) */}
+              <span className="absolute left-0 top-2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-gradient-to-br from-indigo-400 to-fuchsia-400 shadow" aria-hidden />
+              <div className="flex items-center gap-2 flex-wrap min-w-0">
+                <h4 className="font-semibold break-words">{it.title}</h4>
                 <span className="text-xs text-slate-300/80">• {it.location}</span>
               </div>
               <div className="text-xs text-slate-300/80 mt-0.5">{it.period}</div>
               <ul className="mt-2 text-sm list-disc pl-4 space-y-1 text-slate-200/90">
-                {it.bullets.map((b, i) => <li key={i}>{b}</li>)}
+                {it.bullets.map((b, i) => <li key={i} className="break-words">{b}</li>)}
               </ul>
-            </li>
+            </div>
           ))}
-        </ol>
+        </div>
       </Card>
     </section>
   );
 }
 
-function BriefcaseIcon(props: any) {
+function BriefcaseIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-indigo-300" {...props}>
       <path d="M9 6V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1" />
@@ -690,18 +762,58 @@ function BriefcaseIcon(props: any) {
   );
 }
 
+/* ============================== BLOG — ARTIGOS ============================== */
+function BlogArticles() {
+  const articles: BlogArticle[] = [
+    { title: "Ransomware e Vazamento de Dados: como proteger sua organização", url: "https://www.marinhomendes.adv.br/blog/ransomware-e-vazamento-de-dados/", tags: ["Segurança", "LGPD", "Risco"], Icon: Lock },
+    { title: "LGPD na Era da IA Generativa: riscos, limites e boas práticas", url: "https://www.marinhomendes.adv.br/blog/lgpd-na-era-da-ia-generativa/", tags: ["LGPD", "IA", "Governança"], Icon: Shield },
+    { title: "Guia LGPD (Categoria)", url: "https://www.marinhomendes.adv.br/blog/category/lgpd/", tags: ["LGPD", "Compliance"], Icon: FileText },
+    { title: "Advocacia & Tecnologia: visão prática", url: "https://www.marinhomendes.adv.br/blog/advocacia-e-tecnologia/", tags: ["Tecnologia", "Prática Jurídica"], Icon: Newspaper },
+  ];
+
+  return (
+    <section id="blog">
+      <Card tilt>
+        <SectionTitle icon={Newspaper} title="Artigos do Blog" subtitle="Conteúdo autoral — tecnologia, LGPD e segurança" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+          {articles.map(({ title, url, tags, Icon }, i) => (
+            <a key={i} href={url} target="_blank" rel="noreferrer" className="group block min-w-0">
+              <div className="rounded-2xl p-4 bg-white/5 border border-white/10 hover:bg-white/10 transition h-full relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-500/0 via-indigo-500/0 to-cyan-400/0 group-hover:from-fuchsia-500/10 group-hover:via-indigo-500/10 group-hover:to-cyan-400/10 blur-xl" />
+                <div className="relative flex items-start gap-3 min-w-0">
+                  {Icon ? <Icon className="w-5 h-5 text-indigo-300 shrink-0" /> : null}
+                  <div className="min-w-0 flex-1">
+                    <div className="font-semibold group-hover:text-white leading-snug break-words">{title}</div>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {tags.map((t) => (
+                        <span key={t} className="text-[11px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10">{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <ExternalLink className="w-3.5 h-3.5 opacity-70 ml-2 shrink-0" />
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </Card>
+    </section>
+  );
+}
+
+/* ============================== FORMAÇÃO ============================== */
 function Education() {
   return (
     <section id="formacao">
       <Card tilt>
         <SectionTitle icon={HatIcon} title="Formação Acadêmica" />
-        <ul className="space-y-4">
+        <ul className="space-y-4 min-w-0">
           <li>
-            <div className="font-semibold">Bacharelado — Sistemas da Informação (em curso)</div>
+            <div className="font-semibold break-words">Bacharelado — Sistemas da Informação (em curso)</div>
             <div className="text-sm text-slate-300/80">Centro Universitário Adventista de São Paulo — fev/2025 a dez/2028</div>
           </li>
           <li>
-            <div className="font-semibold">Técnico Integrado — Ciências da Computação e Informática</div>
+            <div className="font-semibold break-words">Técnico Integrado — Ciências da Computação e Informática</div>
             <div className="text-sm text-slate-300/80">Centro Universitário Adventista de São Paulo — jan/2022 a dez/2024</div>
           </li>
         </ul>
@@ -710,7 +822,7 @@ function Education() {
   );
 }
 
-function HatIcon(props: any) {
+function HatIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-indigo-300" {...props}>
       <path d="M3 10l9-5 9 5-9 5-9-5z" />
@@ -720,7 +832,7 @@ function HatIcon(props: any) {
   );
 }
 
-/* ============================== LINKEDIN (somente cartão 3D) ============================== */
+/* ============================== LINKEDIN (cartão clipado) ============================== */
 function LinkedInBadge({ vanity = "juan-mendes-739084273" }: { vanity?: string }) {
   return (
     <Card tilt>
@@ -733,13 +845,17 @@ function LinkedInBadge({ vanity = "juan-mendes-739084273" }: { vanity?: string }
 function LinkedInGlass({ vanity }: { vanity: string }) {
   return (
     <div id="linkedin-glass" className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-white/0 to-white/5 p-5">
-      <div className="pointer-events-none absolute -inset-1 rounded-[inherit] bg-gradient-to-r from-fuchsia-500/10 via-indigo-500/10 to-cyan-400/10 blur-2xl" />
-      <div className="relative grid gap-3 sm:grid-cols-[auto,1fr] sm:gap-4 items-center">
+      <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-r from-fuchsia-500/10 via-indigo-500/10 to-cyan-400/10 blur-2xl" />
+      <div className="relative grid gap-3 sm:grid-cols-[auto,1fr] sm:gap-4 items-center min-w-0">
         <div className="shrink-0"><LogoJM size={48} /></div>
-        <div>
-          <div className="text-xl font-bold">Juan Mendes</div>
-          <div className="text-sm text-slate-300/90">Full Stack Developer | Machine Learning | Business Intelligence | Data Science | N8N</div>
-          <div className="text-xs text-slate-300/70 mt-1">Marinho Mendes Advogados • Centro Universitário Adventista de São Paulo</div>
+        <div className="min-w-0">
+          <div className="text-xl font-bold truncate">Juan Mendes</div>
+          <div className="text-sm text-slate-300/90 break-words">
+            Full Stack Developer | Machine Learning | Business Intelligence | Data Science | N8N
+          </div>
+          <div className="text-xs text-slate-300/70 mt-1 break-words">
+            Marinho Mendes Advogados • Centro Universitário Adventista de São Paulo
+          </div>
         </div>
         <div className="sm:col-span-2 mt-2 flex flex-wrap gap-2">
           <a href={`https://www.linkedin.com/in/${vanity}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 bg-indigo-600/90 hover:bg-indigo-500 transition shadow">
@@ -766,177 +882,130 @@ function SteamCard() {
   );
 }
 
-/* ============================== CEP / MAPA (versão enxuta e precisa) ============================== */
-type ViaCep = {
-  cep: string;
-  logradouro?: string;
-  bairro?: string;
-  localidade?: string;
-  uf?: string;
-  erro?: boolean;
-};
-
-async function geocodeByCep(
-  digits: string,
-  hint?: { city?: string; uf?: string }
-): Promise<{ lat: number; lon: number } | null> {
-  // 1) Busca estruturada por CEP no Brasil (melhor que texto solto)
-  const q1 = new URLSearchParams({
-    format: "json",
-    postalcode: digits,
-    countrycodes: "br",
-    limit: "1",
-    addressdetails: "1",
-  });
-  let resp = await fetch(`https://nominatim.openstreetmap.org/search?${q1}`, {
-    headers: { "Accept-Language": "pt-BR" },
-  }).then((r) => r.json());
-
-  if (Array.isArray(resp) && resp[0]) {
-    return { lat: parseFloat(resp[0].lat), lon: parseFloat(resp[0].lon) };
-  }
-
-  // 2) Fallback com cidade/UF (quando disponível via ViaCEP)
-  if (hint?.city || hint?.uf) {
-    const q2 = new URLSearchParams({
-      format: "json",
-      countrycodes: "br",
-      city: hint.city || "",
-      state: hint.uf || "",
-      postalcode: digits,
-      limit: "1",
-      addressdetails: "1",
-    });
-    resp = await fetch(`https://nominatim.openstreetmap.org/search?${q2}`, {
-      headers: { "Accept-Language": "pt-BR" },
-    }).then((r) => r.json());
-    if (Array.isArray(resp) && resp[0]) {
-      return { lat: parseFloat(resp[0].lat), lon: parseFloat(resp[0].lon) };
-    }
-  }
-
-  return null;
+/* ============================== CONQUISTAS (GitHub) ============================== */
+function Achievements({ username }: { username: string }) {
+  const [data, setData] = useState<AchievementsData | null>(null);
+  useEffect(() => {
+    async function run() {
+      try {
+        const [u, r] = await Promise.all([
+          fetch(`https://api.github.com/users/${username}`).then((res) => res.json() as Promise<GitHubUser>),
+          fetch(`https://api.github.com/users/${username}/repos?per_page=100`).then((res) => res.json() as Promise<GitHubRepo[]>),
+        ]);
+        const stars = (Array.isArray(r) ? r : []).reduce((acc, x) => acc + (x.stargazers_count || 0), 0);
+        setData({
+          followers: u?.followers || 0,
+          public_repos: u?.public_repos || 0,
+          public_gists: u?.public_gists || 0,
+          since: u?.created_at ? new Date(u.created_at).getFullYear() : null,
+          stars,
+        });
+} catch (err: unknown) {
+  console.error("[Achievements] fetch failed:", err);
 }
 
-function MapCEP({ cep }: { cep: string }) {
-  const [addr, setAddr] = React.useState<ViaCep | null>(null);
-  const [pos, setPos] = React.useState<{ lat: number; lon: number } | null>(null);
-  const [err, setErr] = React.useState<string | null>(null);
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        setLoading(true);
-        setErr(null);
-
-        const digits = cep.replace(/\D/g, "");
-        if (digits.length !== 8) throw new Error("CEP inválido — use 8 dígitos.");
-
-        // ViaCEP (endereço correto)
-        const viacep: ViaCep = await fetch(`https://viacep.com.br/ws/${digits}/json/`).then((r) => r.json());
-        if (viacep?.erro) throw new Error("CEP não encontrado na base ViaCEP.");
-
-        if (!cancelled) setAddr(viacep);
-
-        // Geocodificação mais precisa por CEP
-        const geo = await geocodeByCep(digits, { city: viacep.localidade, uf: viacep.uf });
-        if (!geo) throw new Error("Não consegui localizar esse CEP no mapa.");
-        if (!cancelled) setPos(geo);
-      } catch (e: any) {
-        if (!cancelled) setErr(e?.message || "Falha ao localizar CEP.");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [cep]);
-
-  const subtitle = addr
-    ? `CEP ${addr.cep} • ${[addr.logradouro, addr.bairro].filter(Boolean).join(", ")} ${addr.localidade ? "— " + addr.localidade : ""}${addr.uf ? "/" + addr.uf : ""}`
-    : `CEP ${cep}`;
-
-  const mapUrl =
-    pos &&
-    `https://staticmap.openstreetmap.de/staticmap.php?center=${pos.lat},${pos.lon}&zoom=15&size=780x340&markers=${pos.lat},${pos.lon},lightblue1`;
+    }
+    run();
+  }, [username]);
 
   return (
     <Card tilt>
-      <SectionTitle icon={MapPin} title="Localização (CEP)" subtitle={subtitle} />
-
-      <div className="rounded-2xl overflow-hidden border border-white/10 bg-white/[0.04]">
-        {loading ? (
-          <div className="h-[220px] grid place-items-center text-slate-300/90">Carregando mapa…</div>
-        ) : err ? (
-          <div className="p-4 text-sm text-rose-200/90">{err}</div>
-        ) : mapUrl ? (
-          <img
-            id="map-static"
-            src={mapUrl}
-            alt={`Mapa do CEP ${addr?.cep}`}
-            className="w-full h-[220px] object-cover"
-            loading="lazy"
-          />
-        ) : (
-          <div className="h-[220px] grid place-items-center text-slate-300/90">Sem mapa para este CEP.</div>
-        )}
+      <SectionTitle icon={Trophy} title="Conquistas & Números" subtitle="GitHub em tempo real" />
+      <div className="grid grid-cols-2 gap-3 min-w-0">
+        <Stat label="Followers" value={data?.followers ?? "—"} />
+        <Stat label="Repositórios" value={data?.public_repos ?? "—"} />
+        <Stat label="Stars (somadas)" value={data?.stars ?? "—"} />
+        <Stat label="Desde" value={data?.since ?? "—"} />
       </div>
-
-      {addr && (
-        <div className="mt-3 flex flex-wrap gap-2 text-sm">
-          {addr.logradouro ? (
-            <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/10">{addr.logradouro}</span>
-          ) : null}
-          {addr.bairro ? (
-            <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/10">{addr.bairro}</span>
-          ) : null}
-          {(addr.localidade || addr.uf) ? (
-            <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/10">
-              {[addr.localidade, addr.uf].filter(Boolean).join("/")}
-            </span>
-          ) : null}
-          <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/10">{addr.cep}</span>
-        </div>
-      )}
     </Card>
   );
 }
 
+function Stat({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="rounded-xl p-4 bg-white/5 border border-white/10 min-w-0">
+      <div className="text-xs uppercase tracking-wider text-slate-300/80">{label}</div>
+      <div className="mt-1 text-2xl font-bold break-words">{value}</div>
+    </div>
+  );
+}
+
+/* ============================== CEP (badge) ============================== */
+function CepBadge({ cep }: { cep: string }) {
+  return (
+    <Card tilt>
+      <SectionTitle icon={MapPin} title="CEP" subtitle="Contato local — sem exibir endereço" />
+      <div className="grid place-items-center">
+        <div className="px-5 py-3 rounded-2xl border border-white/10 bg-gradient-to-r from-fuchsia-500/10 via-indigo-500/10 to-cyan-400/10 backdrop-blur text-center no-track-overflow">
+          <div className="text-[11px] uppercase tracking-widest text-slate-300/80">Código Postal</div>
+          <div className="mt-1 text-2xl font-black tracking-[0.15em] select-text">{cep}</div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+/* ============================== NOW PLAYING ============================== */
+function NowPlaying() {
+  return (
+    <Card tilt>
+      <SectionTitle icon={Zap} title="No fone agora!" subtitle="Meu status musical em tempo real" />
+      <div className="grid place-items-center gap-4 text-center clip-content">
+        <img
+          id="spotify-typing"
+          src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=18&duration=2000&pause=1000&color=1DB954&center=true&vCenter=true&width=500&lines=%F0%9F%8E%B5+Currently+Listening+To...;%F0%9F%8E%B6+Coding+with+the+perfect+soundtrack!"
+          alt="Spotify Typing"
+          className="w-full max-w-[500px] h-auto block"
+        />
+        <img
+          id="spotify-card"
+          src="https://spotify-github-profile.kittinanx.com/api/view.svg?uid=3327c87dcmrrgsk3rh8efzcfo&cover_image=true&theme=default&show_offline=true&background_color=121212&interchange=true&bar_color=69bfa5&bar_color_cover=true"
+          alt="Spotify Currently Playing"
+          className="w-full max-w-[500px] h-auto block"
+        />
+      </div>
+    </Card>
+  );
+}
 
 /* ============================== FOOTER ============================== */
 function Footer() {
   return (
     <div className="py-10 text-center text-xs text-slate-400/80">
-      © {new Date().getFullYear()} Juan Mendes — Identidade Neon-Tech • React + Tailwind + Framer Motion
+      © {new Date().getFullYear()} Juan Mendes — Identidade Neon-Tech • React + Tailwind • Framer Motion
     </div>
   );
 }
 
-/* ============================== SOBRE MIM ============================== */
+/* ============================== SOBRE MIM + CERTIFICAÇÕES ============================== */
 function AboutMe() {
   const programming = ["TypeScript", "JavaScript", "Python (dados)", "SQL", "HTML", "CSS/Tailwind"];
   const studies = ["Ciência de Dados", "Inteligência Artificial", "Business Intelligence", "Automação (n8n)", "Engenharia de Software", "Cloud & DevOps", "Segurança da Informação"];
-  const certs = [
-    { name: "Hackathon 2025 — UNASP Tech", status: "Concluído" },
-    { name: "N8N e Integrações com APIs", status: "Em andamento" },
-    { name: "Fundamentos de Data Science", status: "Em andamento" },
+  const certificates: Certificate[] = [
+    { name: "Oficina de Língua Portuguesa (Gramática)", issuer: "Fundação Bradesco", credential: "50DF6C46-BF4B-4D33-9E39-C148 68ED1929" },
+    { name: "Administrando Banco de Dados", issuer: "Fundação Bradesco", credential: "B5EEDA3C-5F1A-4F50-A005-D0D 964454296" },
+    { name: "Análise de Dados no Power BI", issuer: "Fundação Bradesco", credential: "5309B7F4-723C-4AA3-A35F-F0FBC B30B3C5" },
+    { name: "Curso Postura e Imagem Profissional", issuer: "Fundação Bradesco", credential: "E0405F0B-6808-4D22-9CE3-CF727 DA3924F" },
+    { name: "IA para seu Novo Emprego: do Currículo à Entrevista", issuer: "Fundação Bradesco", credential: "47AB6F4F-9B92-4867-A948-CD3CC A5D2A06" },
+    { name: "Implementação de Banco de Dados", issuer: "Fundação Bradesco", credential: "02F16181-843F-48D7-83A7-F7157 F1AE223" },
+    { name: "Inteligência Artificial e o Novo Contexto da Cultura Digital", issuer: "Fundação Bradesco", credential: "B7CDFC99-B21B-4167-B3B7-BBAD 47C06958" },
+    { name: "Lei Geral de Proteção de Dados (LGPD)", issuer: "Fundação Bradesco", credential: "0B90AFCA-2DD3-4383-9BC9-BD58 9C27D2AB" },
+    { name: "Segurança em Tecnologia da Informação", issuer: "Fundação Bradesco", credential: "4FD2CD83-9D63-4D72-B14C-51EA 49953704" },
+    { name: "SharePoint", issuer: "Fundação Bradesco", credential: "1789CB78-9CE7-44E4-9977-AC0D0 FF66BEC" },
+    { name: "Visualizando Dados no Power BI", issuer: "Fundação Bradesco", credential: "47AB6F4F-9B92-4867-A948-CD3CC A5D2A06" },
   ];
 
   return (
     <section className="mt-6">
       <Card tilt>
         <SectionTitle icon={Sparkles} title="Sobre mim" subtitle="Perfil, linguagens, certificações e áreas de estudo" />
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-3">
+        <div className="grid lg:grid-cols-3 gap-6 min-w-0">
+          <div className="lg:col-span-2 space-y-3 min-w-0">
             <p className="text-slate-200/90 leading-relaxed">
               Sou o <strong>Juan Mendes</strong>, desenvolvedor <em>full stack</em> com paixão por <strong>automação</strong>, <strong>dados</strong> e <strong>experiências digitais com identidade</strong>.
-              Construo integrações de alto desempenho (APIs, webhooks), pipelines de dados e interfaces com motion design para entregar valor real e medível.
             </p>
 
-            <div className="grid sm:grid-cols-2 gap-3">
+            <div className="grid sm:grid-cols-2 gap-3 min-w-0">
               <div className="rounded-xl p-4 bg-white/5 border border-white/10">
                 <div className="text-xs uppercase tracking-wider text-slate-300/80 mb-2">Linguagens (código)</div>
                 <div className="flex flex-wrap gap-2">
@@ -970,24 +1039,25 @@ function AboutMe() {
               <ul className="list-disc pl-5 space-y-1 text-sm text-slate-200/90">
                 <li>Bots e fluxos <strong>n8n</strong> com autenticação OAuth2, capturas multicanal e integrações (WhatsApp/Sheets/API).</li>
                 <li>APIs <strong>REST</strong> com Node.js/TypeScript e <strong>PostgreSQL</strong>, com logs estruturados e filas.</li>
-                <li>Dashboards de <strong>BI</strong> com métricas em tempo real e pipelines de dados para insights operacionais.</li>
-                <li>UIs reativas com <strong>React</strong> + <strong>Tailwind</strong> + <strong>Framer Motion</strong> (motion design funcional).</li>
+                <li>Dashboards de <strong>BI</strong> com métricas em tempo real e pipelines de dados.</li>
+                <li>UIs reativas com <strong>React</strong> + <strong>Tailwind</strong> + <strong>Framer Motion</strong>.</li>
               </ul>
             </div>
           </div>
 
-          {/* Certificações */}
-          <div className="space-y-3">
+          {/* Certificações — lista rolável no mobile */}
+          <div className="space-y-3 min-w-0">
             <div className="rounded-xl p-4 bg-white/5 border border-white/10">
               <div className="flex items-center gap-2 mb-2">
                 <BadgeCheck className="w-4 h-4 text-emerald-300" />
-                <h4 className="font-semibold">Certificações</h4>
+                <h4 className="font-semibold">Certificações — Fundação Bradesco</h4>
               </div>
-              <ul className="space-y-2 text-sm">
-                {certs.map((c) => (
-                  <li key={c.name} className="flex items-center justify-between gap-2">
-                    <span>{c.name}</span>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 border border-white/10">{c.status}</span>
+              <ul className="space-y-2 text-sm max-h-80 overflow-auto pr-1">
+                {certificates.map((c) => (
+                  <li key={c.name} className="rounded-lg p-2 bg-white/5 border border-white/10">
+                    <div className="font-medium leading-snug">{c.name}</div>
+                    <div className="text-[12px] text-slate-300/80">Emissor: {c.issuer}</div>
+                    <div className="text-[11px] text-slate-400/80 break-all">Credencial: {c.credential}</div>
                   </li>
                 ))}
               </ul>
@@ -1009,46 +1079,18 @@ function AboutMe() {
   );
 }
 
-/* ============================== NOW PLAYING (Spotify) ============================== */
-function NowPlaying() {
-  return (
-    <Card tilt>
-      <SectionTitle icon={Zap} title="No fone agora!" subtitle="Seu status musical em tempo real" />
-      <div className="grid place-items-center gap-4 text-center">
-        <img
-          id="spotify-typing"
-          src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=18&duration=2000&pause=1000&color=1DB954&center=true&vCenter=true&width=500&lines=%F0%9F%8E%B5+Currently+Listening+To...;%F0%9F%8E%B6+Coding+with+the+perfect+soundtrack!"
-          alt="Spotify Typing"
-          className="max-w-full"
-        />
-        <img
-          id="spotify-card"
-          src="https://spotify-github-profile.kittinanx.com/api/view.svg?uid=3327c87dcmrrgsk3rh8efzcfo&cover_image=true&theme=default&show_offline=true&background_color=121212&interchange=true&bar_color=69bfa5&bar_color_cover=true"
-          alt="Spotify Currently Playing"
-          className="max-w-full"
-        />
-      </div>
-    </Card>
-  );
-}
-
-/* ============================== DEV SMOKE (console) ============================== */
+/* ============================== DEV SMOKE ============================== */
 function DevSmoke() {
   useEffect(() => {
     try {
-      console.assert(document.querySelector("#projetos") !== null, "[Smoke] Seção Projetos deve existir");
-      console.assert(typeof window !== "undefined", "[Smoke] Ambiente browser");
-      console.assert(document.getElementById("scroll-progress-bar") !== null, "[Smoke] Progress bar presente");
-      console.assert(document.getElementById("spotify-typing") !== null, "[Smoke] SVG typing presente");
-      console.assert(document.getElementById("spotify-card") !== null, "[Smoke] Spotify card presente");
-      console.assert(document.getElementById("linkedin-glass") !== null, "[Smoke] LinkedIn card presente");
-      setTimeout(() => {
-        const map = document.getElementById("map-osm-iframe");
-        if (!map) console.warn("[Smoke] Mapa OSM ainda não carregado (geocodificação pendente)");
-      }, 2000);
-    } catch (e) {
-      console.warn("Smoke tests falharam:", e);
-    }
+      console.assert(document.querySelector("#projetos") !== null, "[Smoke] Seção Projetos");
+      console.assert(document.getElementById("scroll-progress-bar") !== null, "[Smoke] Progress bar");
+      console.assert(document.getElementById("spotify-typing") !== null, "[Smoke] Spotify typing");
+      console.assert(document.getElementById("spotify-card") !== null, "[Smoke] Spotify card");
+      console.assert(document.getElementById("linkedin-glass") !== null, "[Smoke] LinkedIn card");
+} catch (err: unknown) {
+  console.error("[Achievements] fetch failed:", err);
+}
   }, []);
   return null;
 }
