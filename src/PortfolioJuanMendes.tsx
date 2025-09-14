@@ -766,88 +766,145 @@ function SteamCard() {
   );
 }
 
-/* ============================== CEP / MAPA ============================== */
-function MapCEP({ cep }: { cep: string }) {
-  const [addr, setAddr] = useState<any>(null);
-  const [pos, setPos] = useState<{ lat: number; lon: number } | null>(null);
-  const [err, setErr] = useState<string | null>(null);
-  const [retryKey, setRetryKey] = useState(0);
+/* ============================== CEP / MAPA (versão enxuta e precisa) ============================== */
+type ViaCep = {
+  cep: string;
+  logradouro?: string;
+  bairro?: string;
+  localidade?: string;
+  uf?: string;
+  erro?: boolean;
+};
 
-  useEffect(() => {
-    let cancelled = false;
-    async function run() {
-      try {
-        setErr(null);
-        const v = await fetch(`https://viacep.com.br/ws/${cep.replace(/\D/g, "")}/json/`).then((r) => r.json());
-        if (!cancelled) setAddr(v);
+async function geocodeByCep(
+  digits: string,
+  hint?: { city?: string; uf?: string }
+): Promise<{ lat: number; lon: number } | null> {
+  // 1) Busca estruturada por CEP no Brasil (melhor que texto solto)
+  const q1 = new URLSearchParams({
+    format: "json",
+    postalcode: digits,
+    countrycodes: "br",
+    limit: "1",
+    addressdetails: "1",
+  });
+  let resp = await fetch(`https://nominatim.openstreetmap.org/search?${q1}`, {
+    headers: { "Accept-Language": "pt-BR" },
+  }).then((r) => r.json());
 
-        const q = encodeURIComponent(`${cep} ${v?.localidade || ""} ${v?.uf || ""} Brasil`);
-        const geo = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${q}`).then((r) => r.json());
-        if (!Array.isArray(geo) || !geo[0]) throw new Error("Geocodificação não retornou resultados");
-        const lat = parseFloat(geo[0].lat), lon = parseFloat(geo[0].lon);
-        if (!cancelled) setPos({ lat, lon });
-      } catch (e: any) {
-        if (!cancelled) setErr(e?.message || String(e));
-      }
+  if (Array.isArray(resp) && resp[0]) {
+    return { lat: parseFloat(resp[0].lat), lon: parseFloat(resp[0].lon) };
+  }
+
+  // 2) Fallback com cidade/UF (quando disponível via ViaCEP)
+  if (hint?.city || hint?.uf) {
+    const q2 = new URLSearchParams({
+      format: "json",
+      countrycodes: "br",
+      city: hint.city || "",
+      state: hint.uf || "",
+      postalcode: digits,
+      limit: "1",
+      addressdetails: "1",
+    });
+    resp = await fetch(`https://nominatim.openstreetmap.org/search?${q2}`, {
+      headers: { "Accept-Language": "pt-BR" },
+    }).then((r) => r.json());
+    if (Array.isArray(resp) && resp[0]) {
+      return { lat: parseFloat(resp[0].lat), lon: parseFloat(resp[0].lon) };
     }
-    run();
-    return () => { cancelled = true; };
-  }, [cep, retryKey]);
+  }
 
-  const iframeSrc = useMemo(() => {
-    if (!pos) return null;
-    const { lat, lon } = pos;
-    const d = 0.02;
-    const bbox = `${lon - d},${lat - d},${lon + d},${lat + d}`;
-    return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
-  }, [pos]);
+  return null;
+}
+
+function MapCEP({ cep }: { cep: string }) {
+  const [addr, setAddr] = React.useState<ViaCep | null>(null);
+  const [pos, setPos] = React.useState<{ lat: number; lon: number } | null>(null);
+  const [err, setErr] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        setLoading(true);
+        setErr(null);
+
+        const digits = cep.replace(/\D/g, "");
+        if (digits.length !== 8) throw new Error("CEP inválido — use 8 dígitos.");
+
+        // ViaCEP (endereço correto)
+        const viacep: ViaCep = await fetch(`https://viacep.com.br/ws/${digits}/json/`).then((r) => r.json());
+        if (viacep?.erro) throw new Error("CEP não encontrado na base ViaCEP.");
+
+        if (!cancelled) setAddr(viacep);
+
+        // Geocodificação mais precisa por CEP
+        const geo = await geocodeByCep(digits, { city: viacep.localidade, uf: viacep.uf });
+        if (!geo) throw new Error("Não consegui localizar esse CEP no mapa.");
+        if (!cancelled) setPos(geo);
+      } catch (e: any) {
+        if (!cancelled) setErr(e?.message || "Falha ao localizar CEP.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [cep]);
 
   const subtitle = addr
-    ? `CEP ${cep} — ${addr?.localidade || ""}/${addr?.uf || ""}${addr?.bairro ? ` • ${addr.bairro}` : ""}`
+    ? `CEP ${addr.cep} • ${[addr.logradouro, addr.bairro].filter(Boolean).join(", ")} ${addr.localidade ? "— " + addr.localidade : ""}${addr.uf ? "/" + addr.uf : ""}`
     : `CEP ${cep}`;
+
+  const mapUrl =
+    pos &&
+    `https://staticmap.openstreetmap.de/staticmap.php?center=${pos.lat},${pos.lon}&zoom=15&size=780x340&markers=${pos.lat},${pos.lon},lightblue1`;
 
   return (
     <Card tilt>
       <SectionTitle icon={MapPin} title="Localização (CEP)" subtitle={subtitle} />
-      <div className="relative rounded-xl overflow-hidden border border-white/10">
-        {iframeSrc ? (
-          <iframe id="map-osm-iframe" title="Mapa CEP (OSM)" src={iframeSrc} className="w-full h-[300px]" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+
+      <div className="rounded-2xl overflow-hidden border border-white/10 bg-white/[0.04]">
+        {loading ? (
+          <div className="h-[220px] grid place-items-center text-slate-300/90">Carregando mapa…</div>
+        ) : err ? (
+          <div className="p-4 text-sm text-rose-200/90">{err}</div>
+        ) : mapUrl ? (
+          <img
+            id="map-static"
+            src={mapUrl}
+            alt={`Mapa do CEP ${addr?.cep}`}
+            className="w-full h-[220px] object-cover"
+            loading="lazy"
+          />
         ) : (
-          <div className="w-full h-[300px] grid place-items-center text-slate-300/90">
-            {err ? (
-              <div className="text-center">
-                <div className="mb-2">Não foi possível carregar o mapa do CEP.</div>
-                <button onClick={() => setRetryKey((k) => k + 1)} className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20">
-                  Tentar novamente
-                </button>
-              </div>
-            ) : (
-              <div>Localizando CEP no mapa…</div>
-            )}
-          </div>
+          <div className="h-[220px] grid place-items-center text-slate-300/90">Sem mapa para este CEP.</div>
         )}
-        {/* Alvo & anéis visuais */}
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <span className="relative inline-block">
-            <span className="absolute inline-flex h-14 w-14 rounded-full bg-fuchsia-400/30 blur-md animate-ping" />
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-fuchsia-300 shadow-md ring-4 ring-fuchsia-400/40" />
-          </span>
-        </div>
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full border border-fuchsia-400/20 animate-[spin_16s_linear_infinite]" />
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full border border-indigo-400/10 animate-[spin_24s_linear_infinite_reverse]" />
-        </div>
       </div>
+
       {addr && (
-        <div className="mt-2 text-xs text-slate-300/80">
-          {addr.logradouro ? `${addr.logradouro}, ` : ""}
-          {addr.bairro ? `${addr.bairro} — ` : ""}
-          {addr.localidade}/{addr.uf}
+        <div className="mt-3 flex flex-wrap gap-2 text-sm">
+          {addr.logradouro ? (
+            <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/10">{addr.logradouro}</span>
+          ) : null}
+          {addr.bairro ? (
+            <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/10">{addr.bairro}</span>
+          ) : null}
+          {(addr.localidade || addr.uf) ? (
+            <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/10">
+              {[addr.localidade, addr.uf].filter(Boolean).join("/")}
+            </span>
+          ) : null}
+          <span className="px-2.5 py-1 rounded-full bg-white/10 border border-white/10">{addr.cep}</span>
         </div>
       )}
     </Card>
   );
 }
+
 
 /* ============================== FOOTER ============================== */
 function Footer() {
