@@ -109,11 +109,13 @@ function GridFX() {
 // Glow que segue o cursor
 function CursorGlow() {
   const [pos, setPos] = useState({ x: -9999, y: -9999 });
+
   useEffect(() => {
-    const onMove = (e) => setPos({ x: e.clientX, y: e.clientY });
+    const onMove = (e: PointerEvent) => setPos({ x: e.clientX, y: e.clientY });
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);
   }, []);
+
   const style = useMemo(
     () => ({
       left: pos.x - 250,
@@ -154,12 +156,21 @@ function ScrollProgress() {
 }
 
 /* ============================== PRIMITIVOS ============================== */
-function Card({ children, className = "", tilt = false }) {
+type CardProps = {
+  children: React.ReactNode;
+  className?: string;
+  tilt?: boolean;
+};
+
+
+function Card({ children, className = "", tilt = false }: CardProps) {
+
   const ref = useRef<HTMLDivElement | null>(null);
   const rotateX = useMotionValue(0);
   const rotateY = useMotionValue(0);
 
   function onMove(e: React.MouseEvent<HTMLDivElement>) {
+
     if (!tilt || !ref.current) return;
     const r = ref.current.getBoundingClientRect();
     const x = e.clientX - r.left;
@@ -174,7 +185,6 @@ function Card({ children, className = "", tilt = false }) {
     rotateX.set(0);
     rotateY.set(0);
   }
-
   return (
     <motion.div
       ref={ref}
@@ -233,7 +243,7 @@ function NavBar() {
 }
 
 /* LOGO “J” (novo) */
-function LogoJM({ size = 40 }: { size?: number }) {
+function LogoJM({ size = 40 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" className="drop-shadow-[0_0_12px_rgba(99,102,241,.35)]">
       <defs>
@@ -258,6 +268,7 @@ function LogoJM({ size = 40 }: { size?: number }) {
     </svg>
   );
 }
+
 
 /* ============================== HERO ============================== */
 function Hero() {
