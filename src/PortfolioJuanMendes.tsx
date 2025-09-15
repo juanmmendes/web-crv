@@ -767,7 +767,7 @@ function BlogArticles() {
   const articles: BlogArticle[] = [
     { title: "Ransomware e Vazamento de Dados: como proteger sua organização", url: "https://www.marinhomendes.adv.br/blog/ransomware-e-vazamento-de-dados/", tags: ["Segurança", "LGPD", "Risco"], Icon: Lock },
     { title: "LGPD na Era da IA Generativa: riscos, limites e boas práticas", url: "https://www.marinhomendes.adv.br/blog/lgpd-na-era-da-ia-generativa/", tags: ["LGPD", "IA", "Governança"], Icon: Shield },
-    { title: "Guia LGPD (Categoria)", url: "https://www.marinhomendes.adv.br/blog/ia-direito-seguranca/", tags: ["LGPD", "Compliance"], Icon: FileText },
+    { title: "O uso da IA Generativa: Como garantir a segurança e a precisão?", url: "https://www.marinhomendes.adv.br/blog/ia-direito-seguranca/", tags: ["LGPD", "Compliance"], Icon: FileText },
     { title: "Advocacia & Tecnologia: visão prática", url: "https://www.marinhomendes.adv.br/blog/advocacia-e-tecnologia/", tags: ["Tecnologia", "Prática Jurídica"], Icon: Newspaper },
   ];
 
