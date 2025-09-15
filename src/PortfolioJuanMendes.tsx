@@ -528,7 +528,7 @@ function TechMarquee() {
   ];
   return (
     <Card tilt>
-      <SectionTitle icon={Palette} title="DNA Visual & Tech" subtitle="Marquee interativo com suas stacks principais" />
+      <SectionTitle icon={Palette} title="DNA Visual & Tech" subtitle="Marquee interativo com minhas stacks principais" />
       <div className="relative overflow-x-hidden rounded-xl">
         {/* trilho com largura grande, mas clipado */}
         <div className="flex gap-3 sm:gap-6 animate-[scrolllinear_18s_linear_infinite] will-change-transform min-w-[200%]">
@@ -767,7 +767,7 @@ function BlogArticles() {
   const articles: BlogArticle[] = [
     { title: "Ransomware e Vazamento de Dados: como proteger sua organização", url: "https://www.marinhomendes.adv.br/blog/ransomware-e-vazamento-de-dados/", tags: ["Segurança", "LGPD", "Risco"], Icon: Lock },
     { title: "LGPD na Era da IA Generativa: riscos, limites e boas práticas", url: "https://www.marinhomendes.adv.br/blog/lgpd-na-era-da-ia-generativa/", tags: ["LGPD", "IA", "Governança"], Icon: Shield },
-    { title: "Guia LGPD (Categoria)", url: "https://www.marinhomendes.adv.br/blog/category/lgpd/", tags: ["LGPD", "Compliance"], Icon: FileText },
+    { title: "Guia LGPD (Categoria)", url: "https://www.marinhomendes.adv.br/blog/ia-direito-seguranca/", tags: ["LGPD", "Compliance"], Icon: FileText },
     { title: "Advocacia & Tecnologia: visão prática", url: "https://www.marinhomendes.adv.br/blog/advocacia-e-tecnologia/", tags: ["Tecnologia", "Prática Jurídica"], Icon: Newspaper },
   ];
 
@@ -934,7 +934,7 @@ function Stat({ label, value }: { label: string; value: React.ReactNode }) {
 function CepBadge({ cep }: { cep: string }) {
   return (
     <Card tilt>
-      <SectionTitle icon={MapPin} title="CEP" subtitle="Contato local — sem exibir endereço" />
+      <SectionTitle icon={MapPin} title="CEP" subtitle="Contato local" />
       <div className="grid place-items-center">
         <div className="px-5 py-3 rounded-2xl border border-white/10 bg-gradient-to-r from-fuchsia-500/10 via-indigo-500/10 to-cyan-400/10 backdrop-blur text-center no-track-overflow">
           <div className="text-[11px] uppercase tracking-widest text-slate-300/80">Código Postal</div>
@@ -1016,7 +1016,7 @@ function AboutMe() {
               </div>
 
               <div className="rounded-xl p-4 bg-white/5 border border-white/10">
-                <div className="text-xs uppercase tracking-wider text-slate-300/80 mb-2">Idiomas (falados)</div>
+                <div className="text-xs uppercase tracking-wider text-slate-300/80 mb-2">Idiomas </div>
                 <div className="flex flex-wrap gap-2 text-sm">
                   <span className="px-2.5 py-1 rounded-full bg-white/10">Português — Nativo</span>
                   <span className="px-2.5 py-1 rounded-full bg-white/10">Inglês — Profissional</span>
@@ -1035,7 +1035,7 @@ function AboutMe() {
             </div>
 
             <div className="rounded-xl p-4 bg-white/5 border border-white/10">
-              <div className="text-xs uppercase tracking-wider text-slate-300/80 mb-2">Trabalhos & entregas recentes (exemplos)</div>
+              <div className="text-xs uppercase tracking-wider text-slate-300/80 mb-2">Trabalhos & entregas recentes </div>
               <ul className="list-disc pl-5 space-y-1 text-sm text-slate-200/90">
                 <li>Bots e fluxos <strong>n8n</strong> com autenticação OAuth2, capturas multicanal e integrações (WhatsApp/Sheets/API).</li>
                 <li>APIs <strong>REST</strong> com Node.js/TypeScript e <strong>PostgreSQL</strong>, com logs estruturados e filas.</li>
@@ -1050,7 +1050,7 @@ function AboutMe() {
             <div className="rounded-xl p-4 bg-white/5 border border-white/10">
               <div className="flex items-center gap-2 mb-2">
                 <BadgeCheck className="w-4 h-4 text-emerald-300" />
-                <h4 className="font-semibold">Certificações — Fundação Bradesco</h4>
+                <h4 className="font-semibold">Certificações</h4>
               </div>
               <ul className="space-y-2 text-sm max-h-80 overflow-auto pr-1">
                 {certificates.map((c) => (
