@@ -27,6 +27,7 @@ import {
   Newspaper,
   FileText,
   Lock,
+  QrCode,
 } from "lucide-react";
 
 /* ============================== TIPOS ============================== */
@@ -88,10 +89,6 @@ type Certificate = {
 
 /* ============================== APP ============================== */
 // 🚀 Currículo Web — Juan Mendes (Mobile-First Overflow-Safe)
-// - Reset global anti-overflow + min-w-0 em todas as colunas/cartões
-// - Blog abaixo de Experiência
-// - CEP como badge (sem endereço)
-// - “Meu status musical” no Now Playing
 
 export default function PortfolioJuanMendes() {
   return (
@@ -141,94 +138,52 @@ function GlobalOverflowReset() {
   return (
     <style>{`
       html, body { overflow-x: hidden; }
-      /* garante que filhos flex/grid não forcem largura */
       * { min-width: 0; }
       img, svg, video, canvas { max-width: 100%; height: auto; }
-      /* evita barra por causa de filter/blur/shadow */
       .clip-content { overflow: hidden; }
-      /* evita largura > viewport por espaçamento de letras */
       .no-track-overflow { word-break: break-word; overflow-wrap: anywhere; }
     `}</style>
   );
 }
 
-/* ============================== DECOR (overflow-safe) ============================== */
-/* ============================== DECOR (NEON PULSANTE COM FRAMER MOTION) ============================== */
+/* ============================== DECOR ============================== */
 function AuroraBG() {
   return (
     <div className="fixed inset-0 -z-20 clip-content pointer-events-none">
-      {/* fundo */}
       <div className="absolute inset-0 bg-black" />
-
-      {/* BLOB 1 — topo/esquerda */}
       <motion.div
         className="absolute rounded-full blur-3xl bg-gradient-to-br from-fuchsia-500/35 via-violet-500/25 to-cyan-400/25"
-        style={{
-          top: '-20vw',
-          left: '-20vw',
-          width: '72vw',
-          height: '72vw',
-        }}
-        animate={{
-          // pulsa
-          scale: [0.95, 1.08, 0.95],
-          opacity: [0.7, 1, 0.7],
-          // gira contínuo
-          rotate: 360,
-        }}
+        style={{ top: "-20vw", left: "-20vw", width: "72vw", height: "72vw" }}
+        animate={{ scale: [0.95, 1.08, 0.95], opacity: [0.7, 1, 0.7], rotate: 360 }}
         transition={{
-          scale: { duration: 8, ease: 'easeInOut', repeat: Infinity },
-          opacity: { duration: 8, ease: 'easeInOut', repeat: Infinity },
-          rotate: { duration: 60, ease: 'linear', repeat: Infinity },
+          scale: { duration: 8, ease: "easeInOut", repeat: Infinity },
+          opacity: { duration: 8, ease: "easeInOut", repeat: Infinity },
+          rotate: { duration: 60, ease: "linear", repeat: Infinity },
         }}
       />
-
-      {/* BLOB 2 — meio/direita */}
       <motion.div
         className="absolute rounded-full blur-3xl bg-gradient-to-br from-indigo-600/30 via-sky-500/20 to-emerald-400/20"
-        style={{
-          top: '33%',
-          right: '-10vw',
-          width: '56vw',
-          height: '56vw',
-        }}
-        animate={{
-          scale: [0.96, 1.06, 0.96],
-          opacity: [0.65, 0.95, 0.65],
-          rotate: -360,
-        }}
+        style={{ top: "33%", right: "-10vw", width: "56vw", height: "56vw" }}
+        animate={{ scale: [0.96, 1.06, 0.96], opacity: [0.65, 0.95, 0.65], rotate: -360 }}
         transition={{
-          scale: { duration: 10, ease: 'easeInOut', repeat: Infinity },
-          opacity: { duration: 10, ease: 'easeInOut', repeat: Infinity },
-          rotate: { duration: 72, ease: 'linear', repeat: Infinity },
+          scale: { duration: 10, ease: "easeInOut", repeat: Infinity },
+          opacity: { duration: 10, ease: "easeInOut", repeat: Infinity },
+          rotate: { duration: 72, ease: "linear", repeat: Infinity },
         }}
       />
-
-      {/* BLOB 3 — baixo/centro */}
       <motion.div
         className="absolute rounded-full blur-3xl bg-gradient-to-tr from-rose-500/25 via-fuchsia-400/20 to-amber-300/20"
-        style={{
-          bottom: '-12vw',
-          left: '20%',
-          width: '68vw',
-          height: '68vw',
-        }}
-        animate={{
-          scale: [0.94, 1.07, 0.94],
-          opacity: [0.6, 0.9, 0.6],
-          rotate: 360,
-        }}
+        style={{ bottom: "-12vw", left: "20%", width: "68vw", height: "68vw" }}
+        animate={{ scale: [0.94, 1.07, 0.94], opacity: [0.6, 0.9, 0.6], rotate: 360 }}
         transition={{
-          scale: { duration: 12, ease: 'easeInOut', repeat: Infinity },
-          opacity: { duration: 12, ease: 'easeInOut', repeat: Infinity },
-          rotate: { duration: 84, ease: 'linear', repeat: Infinity },
+          scale: { duration: 12, ease: "easeInOut", repeat: Infinity },
+          opacity: { duration: 12, ease: "easeInOut", repeat: Infinity },
+          rotate: { duration: 84, ease: "linear", repeat: Infinity },
         }}
       />
     </div>
   );
 }
-
-
 
 function GridFX() {
   return (
@@ -248,7 +203,7 @@ function GridFX() {
   );
 }
 
-// Glow do cursor — container com overflow hidden
+// Glow do cursor
 function CursorGlow() {
   const [pos, setPos] = useState({ x: -9999, y: -9999 });
   useEffect(() => {
@@ -319,7 +274,10 @@ function Card({ children, className = "", tilt = false }: CardProps) {
     rotateX.set(py * -8);
     rotateY.set(px * 8);
   }
-  function reset() { rotateX.set(0); rotateY.set(0); }
+  function reset() {
+    rotateX.set(0);
+    rotateY.set(0);
+  }
 
   return (
     <motion.div
@@ -338,7 +296,6 @@ function Card({ children, className = "", tilt = false }: CardProps) {
         className
       }
     >
-      {/* brilho dinâmico dentro do clipping */}
       <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-br from-fuchsia-500/10 via-indigo-500/10 to-cyan-400/10 blur-xl" />
       <div className="relative p-4 sm:p-6 min-w-0">{children}</div>
     </motion.div>
@@ -354,7 +311,9 @@ function SectionTitle({ icon: Icon, title, subtitle }: SectionTitleProps) {
           {title}
         </h3>
         {subtitle ? (
-          <p className="text-sm text-slate-300/80 mt-1 leading-snug break-words">{subtitle}</p>
+          <p className="text-sm text-slate-300/80 mt-1 leading-snug break-words">
+            {subtitle}
+          </p>
         ) : null}
       </div>
     </div>
@@ -373,10 +332,18 @@ function NavBar() {
           </span>
         </div>
         <nav className="hidden sm:flex items-center gap-3 text-sm text-slate-300/90">
-          <a href="#projetos" className="hover:text-white">Projetos</a>
-          <a href="#experiencia" className="hover:text-white">Experiência</a>
-          <a href="#formacao" className="hover:text-white">Formação</a>
-          <a href="#contatos" className="hover:text-white">Contato</a>
+          <a href="#projetos" className="hover:text-white">
+            Projetos
+          </a>
+          <a href="#experiencia" className="hover:text-white">
+            Experiência
+          </a>
+          <a href="#formacao" className="hover:text-white">
+            Formação
+          </a>
+          <a href="#contatos" className="hover:text-white">
+            Contato
+          </a>
         </nav>
       </div>
     </div>
@@ -386,7 +353,12 @@ function NavBar() {
 /* LOGO “J” */
 function LogoJM({ size = 40 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64" className="drop-shadow-[0_0_12px_rgba(99,102,241,.35)]">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 64 64"
+      className="drop-shadow-[0_0_12px_rgba(99,102,241,.35)]"
+    >
       <defs>
         <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
           <stop offset="0%" stopColor="#a78bfa" />
@@ -395,7 +367,14 @@ function LogoJM({ size = 40 }: { size?: number }) {
         </linearGradient>
       </defs>
       <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#g)" opacity="0.15" />
-      <path d="M44 16v20a12 12 0 0 1-12 12h-8" stroke="url(#g)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <path
+        d="M44 16v20a12 12 0 0 1-12 12h-8"
+        stroke="url(#g)"
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
       <path d="M20 48h10" stroke="url(#g)" strokeWidth="3" strokeLinecap="round" opacity="0.7" />
     </svg>
   );
@@ -423,17 +402,31 @@ function Hero() {
               Full Stack Developer • IA • Automação • BI • N8N
             </p>
             <p className="mt-4 text-slate-200/85 leading-relaxed max-w-3xl">
-              Eu crio soluções de software com <strong>identidade</strong>: automações robustas, integrações de APIs e produtos digitais de alta
-              performance. Foco em qualidade, segurança e DX.
+              Eu crio soluções de software com <strong>identidade</strong>:
+              automações robustas, integrações de APIs e produtos digitais de
+              alta performance. Foco em qualidade, segurança e DX.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <a href="#contatos" className="inline-flex items-center gap-2 rounded-xl px-4 py-2 bg-indigo-600/90 hover:bg-indigo-500 transition shadow-lg">
+              <a
+                href="#contatos"
+                className="inline-flex items-center gap-2 rounded-xl px-4 py-2 bg-indigo-600/90 hover:bg-indigo-500 transition shadow-lg"
+              >
                 <Rocket className="w-4 h-4" /> Fale comigo
               </a>
-              <a href="https://github.com/juanmmendes" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-xl px-4 py-2 bg-white/10 hover:bg-white/20 transition">
+              <a
+                href="https://github.com/juanmmendes"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl px-4 py-2 bg-white/10 hover:bg-white/20 transition"
+              >
                 <Github className="w-4 h-4" /> GitHub
               </a>
-              <a href="https://www.linkedin.com/in/juan-mendes-739084273" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-xl px-4 py-2 bg-white/10 hover:bg-white/20 transition">
+              <a
+                href="https://www.linkedin.com/in/juan-mendes-739084273"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl px-4 py-2 bg-white/10 hover:bg-white/20 transition"
+              >
                 <Linkedin className="w-4 h-4" /> LinkedIn
               </a>
             </div>
@@ -453,17 +446,20 @@ function AvatarOrb({ username }: { username: string }) {
   useEffect(() => {
     fetch(`https://api.github.com/users/${username}`)
       .then((r) => r.json())
-      .then((u: GitHubUser) => setAvatar(u?.avatar_url ?? null))
+      .then((u: GitHubUser) => setAvatar(u && u.avatar_url ? u.avatar_url : null))
       .catch(() => {});
   }, [username]);
   return (
     <div className="relative aspect-square rounded-[2rem] border border-white/15 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
-      {/* orb fixa (sem translate/animate que vaza) */}
       <div className="absolute inset-0 rounded-full blur-3xl bg-gradient-to-br from-fuchsia-500/30 via-indigo-500/30 to-cyan-400/30" />
       <div className="absolute inset-0 m-4 sm:m-6 rounded-2xl bg-black/30 backdrop-blur flex items-center justify-center">
         {avatar ? (
-          <img src={avatar} alt="Avatar" className="w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-full ring-4 ring-white/20 shadow-2xl object-cover" />
+          <img
+            src={avatar}
+            alt="Avatar"
+            className="w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-full ring-4 ring-white/20 shadow-2xl object-cover"
+          />
         ) : (
           <div className="text-6xl md:text-7xl">🧠</div>
         )}
@@ -478,26 +474,70 @@ function ContactStrip() {
   return (
     <section id="contatos" className="mt-6">
       <Card tilt>
-        <SectionTitle icon={Network} title="Contato e Redes" subtitle="Respostas rápidas e colaboração" />
+        <SectionTitle
+          icon={Network}
+          title="Contato e Redes"
+          subtitle="Respostas rápidas e colaboração"
+        />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 min-w-0">
-          <ContactItem icon={Mail} label="E-mail" value="juan.zx016@gmail.com" href="mailto:juan.zx016@gmail.com" />
-          <ContactItem icon={Phone} label="Telefone" value="(19) 99979-1601" href="tel:+5519999791601" />
-          <ContactItem icon={MessageCircle} label="Discord" value="724413788203253773" onClick={() => copy("724413788203253773")} tooltip="Copiar ID" />
-          <ContactItem icon={Linkedin} label="LinkedIn" value="/in/juan-mendes-739084273" href="https://www.linkedin.com/in/juan-mendes-739084273" />
-          <ContactItem icon={Github} label="GitHub" value="juanmmendes" href="https://github.com/juanmmendes" />
-          <ContactItem icon={Gamepad2} label="Steam" value="Perfil" href="https://steamcommunity.com/profiles/76561199305304396" />
+          <ContactItem
+            icon={Mail}
+            label="E-mail"
+            value="juan.zx016@gmail.com"
+            href="mailto:juan.zx016@gmail.com"
+          />
+          <ContactItem
+            icon={Phone}
+            label="Telefone"
+            value="(19) 99979-1601"
+            href="tel:+5519999791601"
+          />
+          <ContactItem
+            icon={MessageCircle}
+            label="Discord"
+            value="724413788203253773"
+            onClick={() => copy("724413788203253773")}
+            tooltip="Copiar ID"
+          />
+          <ContactItem
+            icon={Linkedin}
+            label="LinkedIn"
+            value="/in/juan-mendes-739084273"
+            href="https://www.linkedin.com/in/juan-mendes-739084273"
+          />
+          <ContactItem
+            icon={Github}
+            label="GitHub"
+            value="juanmmendes"
+            href="https://github.com/juanmmendes"
+          />
+          <ContactItem
+            icon={Gamepad2}
+            label="Steam"
+            value="Perfil"
+            href="https://steamcommunity.com/profiles/76561199305304396"
+          />
         </div>
       </Card>
     </section>
   );
 }
 
-function ContactItem({ icon: Icon, label, value, href, onClick, tooltip }: ContactItemProps) {
+function ContactItem({
+  icon: Icon,
+  label,
+  value,
+  href,
+  onClick,
+  tooltip,
+}: ContactItemProps) {
   const content = (
     <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition border border-white/10 cursor-pointer">
       <Icon className="w-4 h-4 text-indigo-300 shrink-0" />
       <div className="min-w-0 flex-1">
-        <div className="text-xs uppercase tracking-wider text-slate-300/80">{label}</div>
+        <div className="text-xs uppercase tracking-wider text-slate-300/80">
+          {label}
+        </div>
         <div className="text-sm font-medium truncate">{value}</div>
       </div>
       {href ? <ExternalLink className="w-3.5 h-3.5 ml-auto opacity-70 shrink-0" /> : null}
@@ -514,7 +554,7 @@ function ContactItem({ icon: Icon, label, value, href, onClick, tooltip }: Conta
   );
 }
 
-/* ============================== DNA VISUAL (marquee safe) ============================== */
+/* ============================== DNA VISUAL ============================== */
 function TechMarquee() {
   const items = [
     { Icon: Code2, label: "TypeScript" },
@@ -530,7 +570,6 @@ function TechMarquee() {
     <Card tilt>
       <SectionTitle icon={Palette} title="DNA Visual & Tech" subtitle="Marquee interativo com minhas stacks principais" />
       <div className="relative overflow-x-hidden rounded-xl">
-        {/* trilho com largura grande, mas clipado */}
         <div className="flex gap-3 sm:gap-6 animate-[scrolllinear_18s_linear_infinite] will-change-transform min-w-[200%]">
           {[...items, ...items, ...items].map((it, i) => (
             <div key={i} className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10">
@@ -558,14 +597,25 @@ function TechStack() {
     { icon: TerminalSquare, label: "CI/CD • Filas" },
     { icon: Network, label: "Integrações Multicanal" },
   ];
-  const studies = ["Ciência de Dados", "Inteligência Artificial", "Business Intelligence", "Automação", "Engenharia de Software", "Cloud Computing", "Segurança da Informação"];
+  const studies = [
+    "Ciência de Dados",
+    "Inteligência Artificial",
+    "Business Intelligence",
+    "Automação",
+    "Engenharia de Software",
+    "Cloud Computing",
+    "Segurança da Informação",
+  ];
 
   return (
     <Card tilt>
       <SectionTitle icon={BadgeCheck} title="Stack & Foco" subtitle="Ferramentas e áreas que mais uso" />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 min-w-0">
         {skills.map((s, i) => (
-          <div key={i} className="flex items-center gap-3 rounded-xl p-3 bg-white/5 border border-white/10 hover:shadow-[0_0_0_1px_rgba(255,255,255,.15)]">
+          <div
+            key={i}
+            className="flex items-center gap-3 rounded-xl p-3 bg-white/5 border border-white/10 hover:shadow-[0_0_0_1px_rgba(255,255,255,.15)]"
+          >
             <s.icon className="w-4 h-4 text-teal-300 shrink-0" />
             <span className="text-sm break-words">{s.label}</span>
           </div>
@@ -605,7 +655,7 @@ function ProjectsFromGitHub({ username }: { username: string }) {
           : [];
         setRepos(sorted.slice(0, 6));
       } catch (err: unknown) {
-           console.error("[ProjectsFromGitHub] fetch failed:", err);
+        console.error("[ProjectsFromGitHub] fetch failed:", err);
       } finally {
         setLoading(false);
       }
@@ -637,7 +687,9 @@ function ProjectsFromGitHub({ username }: { username: string }) {
                     {repo.description || "Sem descrição."}
                   </p>
                   <div className="relative mt-3 text-xs flex flex-wrap items-center gap-3 text-slate-300/80">
-                    <span><Star className="inline w-3 h-3 mr-1" /> {repo.stargazers_count}</span>
+                    <span>
+                      <Star className="inline w-3 h-3 mr-1" /> {repo.stargazers_count}
+                    </span>
                     <span>⬚ {repo.forks_count}</span>
                     {repo.language ? <span>⌘ {repo.language}</span> : null}
                     <span className="ml-auto">Atualizado {new Date(repo.pushed_at).toLocaleDateString("pt-BR")}</span>
@@ -680,7 +732,10 @@ function TopLanguages({ username }: { username: string }) {
               <span className="shrink-0">{Math.round((count / total) * 100)}%</span>
             </div>
             <div className="h-2 mt-1 rounded-full bg-white/10 overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-fuchsia-400 via-indigo-400 to-cyan-300" style={{ width: `${(count / total) * 100}%` }} />
+              <div
+                className="h-full bg-gradient-to-r from-fuchsia-400 via-indigo-400 to-cyan-300"
+                style={{ width: `${(count / total) * 100}%` }}
+              />
             </div>
           </div>
         ))}
@@ -692,7 +747,7 @@ function TopLanguages({ username }: { username: string }) {
   );
 }
 
-/* ============================== EXPERIÊNCIA (timeline sem offsets) ============================== */
+/* ============================== EXPERIÊNCIA ============================== */
 function Experience() {
   const items = [
     {
@@ -734,15 +789,21 @@ function Experience() {
         <div className="space-y-5 min-w-0">
           {items.map((it, idx) => (
             <div key={idx} className="relative pl-5 border-l border-white/10 min-w-0">
-              {/* dot posicionado dentro do container (sem negativo) */}
-              <span className="absolute left-0 top-2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-gradient-to-br from-indigo-400 to-fuchsia-400 shadow" aria-hidden />
+              <span
+                className="absolute left-0 top-2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-gradient-to-br from-indigo-400 to-fuchsia-400 shadow"
+                aria-hidden
+              />
               <div className="flex items-center gap-2 flex-wrap min-w-0">
                 <h4 className="font-semibold break-words">{it.title}</h4>
                 <span className="text-xs text-slate-300/80">• {it.location}</span>
               </div>
               <div className="text-xs text-slate-300/80 mt-0.5">{it.period}</div>
               <ul className="mt-2 text-sm list-disc pl-4 space-y-1 text-slate-200/90">
-                {it.bullets.map((b, i) => <li key={i} className="break-words">{b}</li>)}
+                {it.bullets.map((b, i) => (
+                  <li key={i} className="break-words">
+                    {b}
+                  </li>
+                ))}
               </ul>
             </div>
           ))}
@@ -762,13 +823,33 @@ function BriefcaseIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-/* ============================== BLOG — ARTIGOS ============================== */
+/* ============================== BLOG ============================== */
 function BlogArticles() {
   const articles: BlogArticle[] = [
-    { title: "Ransomware e Vazamento de Dados: como proteger sua organização", url: "https://www.marinhomendes.adv.br/blog/ransomware-e-vazamento-de-dados/", tags: ["Segurança", "LGPD", "Risco"], Icon: Lock },
-    { title: "LGPD na Era da IA Generativa: riscos, limites e boas práticas", url: "https://www.marinhomendes.adv.br/blog/lgpd-na-era-da-ia-generativa/", tags: ["LGPD", "IA", "Governança"], Icon: Shield },
-    { title: "O uso da IA Generativa: Como garantir a segurança e a precisão?", url: "https://www.marinhomendes.adv.br/blog/ia-direito-seguranca/", tags: ["LGPD", "Compliance"], Icon: FileText },
-    { title: "Advocacia & Tecnologia: visão prática", url: "https://www.marinhomendes.adv.br/blog/advocacia-e-tecnologia/", tags: ["Tecnologia", "Prática Jurídica"], Icon: Newspaper },
+    {
+      title: "Ransomware e Vazamento de Dados: como proteger sua organização",
+      url: "https://www.marinhomendes.adv.br/blog/ransomware-e-vazamento-de-dados/",
+      tags: ["Segurança", "LGPD", "Risco"],
+      Icon: Lock,
+    },
+    {
+      title: "LGPD na Era da IA Generativa: riscos, limites e boas práticas",
+      url: "https://www.marinhomendes.adv.br/blog/lgpd-na-era-da-ia-generativa/",
+      tags: ["LGPD", "IA", "Governança"],
+      Icon: Shield,
+    },
+    {
+      title: "O uso da IA Generativa: Como garantir a segurança e a precisão?",
+      url: "https://www.marinhomendes.adv.br/blog/ia-direito-seguranca/",
+      tags: ["LGPD", "Compliance"],
+      Icon: FileText,
+    },
+    {
+      title: "Advocacia & Tecnologia: visão prática",
+      url: "https://www.marinhomendes.adv.br/blog/advocacia-e-tecnologia/",
+      tags: ["Tecnologia", "Prática Jurídica"],
+      Icon: Newspaper,
+    },
   ];
 
   return (
@@ -786,7 +867,9 @@ function BlogArticles() {
                     <div className="font-semibold group-hover:text-white leading-snug break-words">{title}</div>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {tags.map((t) => (
-                        <span key={t} className="text-[11px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10">{t}</span>
+                        <span key={t} className="text-[11px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10">
+                          {t}
+                        </span>
                       ))}
                     </div>
                   </div>
@@ -815,6 +898,53 @@ function Education() {
           <li>
             <div className="font-semibold break-words">Técnico Integrado — Ciências da Computação e Informática</div>
             <div className="text-sm text-slate-300/80">Centro Universitário Adventista de São Paulo — jan/2022 a dez/2024</div>
+
+            {/* PROJETO DE TCC — Quick Location */}
+            <div className="mt-3 rounded-xl border border-white/10 bg-white/5 p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <QrCode className="w-4 h-4 text-indigo-300" />
+                <span className="font-semibold">Projeto de TCC — Quick Location (Controle de Acesso por QR Code)</span>
+              
+              </div>
+              <p className="text-sm text-slate-200/90 leading-relaxed">
+                Desenvolvi uma plataforma web de <strong>check-in/out por QR Code</strong> com <strong>rastreamento em tempo real</strong>, trilha de auditoria e painéis de presença, com foco em <strong>segurança, escalabilidade e usabilidade</strong>.
+              </p>
+              <ul className="mt-2 text-sm list-disc pl-5 space-y-1 text-slate-200/90">
+                <li>
+                  <strong>Arquitetura e MVP:</strong> full-stack (Node.js/Express, HTML/CSS/JS, BD relacional) e <strong>MVP já publicado e funcional</strong>, com landing e planos.
+                </li>
+                <li>
+                  <strong>Dados & SQL:</strong> consultas para presença/ausência, entradas sem saída e inconsistências.
+                </li>
+                <li>
+                  <strong>Segurança:</strong> HTTPS, criptografia em repouso (AES-256), MFA, RBAC, logging e monitoramento.
+                </li>
+                <li>
+                  <strong>Mapas & QR:</strong> Leaflet/Google Maps + QRCode.js/ZXing; visualização espacial e rastreio em tempo real.
+                </li>
+                <li>
+                  <strong>Operação & relatórios:</strong> permanência, rotas, áreas visitadas; rotinas administrativas e pontos de instalação de QR.
+                </li>
+              </ul>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10">Node.js (Express)</span>
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10">JavaScript</span>
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10">MySQL/PostgreSQL</span>
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10">Leaflet</span>
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10">QRCode.js/ZXing</span>
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10">REST APIs</span>
+              </div>
+              <div className="mt-3">
+                <a
+                  href="https://www.projetomed.com.br/TECTI/2024/3TIC/grupo06/quickLocation/public/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 bg-indigo-600/90 hover:bg-indigo-500 transition shadow"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" /> Ver site / demo
+                </a>
+              </div>
+            </div>
           </li>
         </ul>
       </Card>
@@ -832,7 +962,7 @@ function HatIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-/* ============================== LINKEDIN (cartão clipado) ============================== */
+/* ============================== LINKEDIN ============================== */
 function LinkedInBadge({ vanity = "juan-mendes-739084273" }: { vanity?: string }) {
   return (
     <Card tilt>
@@ -847,7 +977,9 @@ function LinkedInGlass({ vanity }: { vanity: string }) {
     <div id="linkedin-glass" className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 via-white/0 to-white/5 p-5">
       <div className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-r from-fuchsia-500/10 via-indigo-500/10 to-cyan-400/10 blur-2xl" />
       <div className="relative grid gap-3 sm:grid-cols-[auto,1fr] sm:gap-4 items-center min-w-0">
-        <div className="shrink-0"><LogoJM size={48} /></div>
+        <div className="shrink-0">
+          <LogoJM size={48} />
+        </div>
         <div className="min-w-0">
           <div className="text-xl font-bold truncate">Juan Mendes</div>
           <div className="text-sm text-slate-300/90 break-words">
@@ -858,10 +990,20 @@ function LinkedInGlass({ vanity }: { vanity: string }) {
           </div>
         </div>
         <div className="sm:col-span-2 mt-2 flex flex-wrap gap-2">
-          <a href={`https://www.linkedin.com/in/${vanity}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 bg-indigo-600/90 hover:bg-indigo-500 transition shadow">
+          <a
+            href={`https://www.linkedin.com/in/${vanity}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 bg-indigo-600/90 hover:bg-indigo-500 transition shadow"
+          >
             <ExternalLink className="w-3.5 h-3.5" /> Ver perfil
           </a>
-          <a href={`https://www.linkedin.com/in/${vanity}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 bg-white/10 hover:bg-white/20 transition">
+          <a
+            href={`https://www.linkedin.com/in/${vanity}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-lg px-3 py-1.5 bg-white/10 hover:bg-white/20 transition"
+          >
             Conectar
           </a>
         </div>
@@ -875,7 +1017,12 @@ function SteamCard() {
   return (
     <Card tilt>
       <SectionTitle icon={Gamepad2} title="Steam" subtitle="Games & comunidade" />
-      <a href="https://steamcommunity.com/profiles/76561199305304396" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm">
+      <a
+        href="https://steamcommunity.com/profiles/76561199305304396"
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex items-center gap-2 text-sm"
+      >
         <ExternalLink className="w-3.5 h-3.5" /> Abrir perfil Steam
       </a>
     </Card>
@@ -885,6 +1032,7 @@ function SteamCard() {
 /* ============================== CONQUISTAS (GitHub) ============================== */
 function Achievements({ username }: { username: string }) {
   const [data, setData] = useState<AchievementsData | null>(null);
+
   useEffect(() => {
     async function run() {
       try {
@@ -894,28 +1042,33 @@ function Achievements({ username }: { username: string }) {
         ]);
         const stars = (Array.isArray(r) ? r : []).reduce((acc, x) => acc + (x.stargazers_count || 0), 0);
         setData({
-          followers: u?.followers || 0,
-          public_repos: u?.public_repos || 0,
-          public_gists: u?.public_gists || 0,
-          since: u?.created_at ? new Date(u.created_at).getFullYear() : null,
+          followers: (u && (u.followers as number)) || 0,
+          public_repos: (u && (u.public_repos as number)) || 0,
+          public_gists: (u && (u.public_gists as number)) || 0,
+          since: u && u.created_at ? new Date(u.created_at).getFullYear() : null,
           stars,
         });
-} catch (err: unknown) {
-  console.error("[Achievements] fetch failed:", err);
-}
-
+      } catch (err: unknown) {
+        console.error("[Achievements] fetch failed:", err);
+      }
     }
     run();
   }, [username]);
 
+  // Fallbacks SEM optional chaining / nullish coalescing no JSX
+  const followers = data ? data.followers : "—";
+  const repos = data ? data.public_repos : "—";
+  const stars = data ? data.stars : "—";
+  const since = data ? (data.since !== null ? data.since : "—") : "—";
+
   return (
     <Card tilt>
       <SectionTitle icon={Trophy} title="Conquistas & Números" subtitle="GitHub em tempo real" />
-      <div className="grid grid-cols-2 gap-3 min-w-0">
-        <Stat label="Followers" value={data?.followers ?? "—"} />
-        <Stat label="Repositórios" value={data?.public_repos ?? "—"} />
-        <Stat label="Stars (somadas)" value={data?.stars ?? "—"} />
-        <Stat label="Desde" value={data?.since ?? "—"} />
+      <div className="grid grid-cols-2 gap-3 min-w-0" id="achievements-stats">
+        <Stat label="Followers" value={followers} />
+        <Stat label="Repositórios" value={repos} />
+        <Stat label="Stars (somadas)" value={stars} />
+        <Stat label="Desde" value={since} />
       </div>
     </Card>
   );
@@ -980,7 +1133,15 @@ function Footer() {
 /* ============================== SOBRE MIM + CERTIFICAÇÕES ============================== */
 function AboutMe() {
   const programming = ["TypeScript", "JavaScript", "Python (dados)", "SQL", "HTML", "CSS/Tailwind"];
-  const studies = ["Ciência de Dados", "Inteligência Artificial", "Business Intelligence", "Automação (n8n)", "Engenharia de Software", "Cloud & DevOps", "Segurança da Informação"];
+  const studies = [
+    "Ciência de Dados",
+    "Inteligência Artificial",
+    "Business Intelligence",
+    "Automação (n8n)",
+    "Engenharia de Software",
+    "Cloud & DevOps",
+    "Segurança da Informação",
+  ];
   const certificates: Certificate[] = [
     { name: "Oficina de Língua Portuguesa (Gramática)", issuer: "Fundação Bradesco", credential: "50DF6C46-BF4B-4D33-9E39-C148 68ED1929" },
     { name: "Administrando Banco de Dados", issuer: "Fundação Bradesco", credential: "B5EEDA3C-5F1A-4F50-A005-D0D 964454296" },
@@ -1010,7 +1171,9 @@ function AboutMe() {
                 <div className="text-xs uppercase tracking-wider text-slate-300/80 mb-2">Linguagens (código)</div>
                 <div className="flex flex-wrap gap-2">
                   {programming.map((p) => (
-                    <span key={p} className="text-xs px-2.5 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30">{p}</span>
+                    <span key={p} className="text-xs px-2.5 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30">
+                      {p}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -1029,7 +1192,9 @@ function AboutMe() {
               <div className="text-xs uppercase tracking-wider text-slate-300/80 mb-2">Áreas de estudo & foco</div>
               <div className="flex flex-wrap gap-2">
                 {studies.map((s) => (
-                  <span key={s} className="text-xs px-2.5 py-1 rounded-full bg-fuchsia-500/15 border border-fuchsia-400/30">{s}</span>
+                  <span key={s} className="text-xs px-2.5 py-1 rounded-full bg-fuchsia-500/15 border border-fuchsia-400/30">
+                    {s}
+                  </span>
                 ))}
               </div>
             </div>
@@ -1037,15 +1202,23 @@ function AboutMe() {
             <div className="rounded-xl p-4 bg-white/5 border border-white/10">
               <div className="text-xs uppercase tracking-wider text-slate-300/80 mb-2">Trabalhos & entregas recentes </div>
               <ul className="list-disc pl-5 space-y-1 text-sm text-slate-200/90">
-                <li>Bots e fluxos <strong>n8n</strong> com autenticação OAuth2, capturas multicanal e integrações (WhatsApp/Sheets/API).</li>
-                <li>APIs <strong>REST</strong> com Node.js/TypeScript e <strong>PostgreSQL</strong>, com logs estruturados e filas.</li>
-                <li>Dashboards de <strong>BI</strong> com métricas em tempo real e pipelines de dados.</li>
-                <li>UIs reativas com <strong>React</strong> + <strong>Tailwind</strong> + <strong>Framer Motion</strong>.</li>
+                <li>
+                  Bots e fluxos <strong>n8n</strong> com autenticação OAuth2, capturas multicanal e integrações (WhatsApp/Sheets/API).
+                </li>
+                <li>
+                  APIs <strong>REST</strong> com Node.js/TypeScript e <strong>PostgreSQL</strong>, com logs estruturados e filas.
+                </li>
+                <li>
+                  Dashboards de <strong>BI</strong> com métricas em tempo real e pipelines de dados.
+                </li>
+                <li>
+                  UIs reativas com <strong>React</strong> + <strong>Tailwind</strong> + <strong>Framer Motion</strong>.
+                </li>
               </ul>
             </div>
           </div>
 
-          {/* Certificações — lista rolável no mobile */}
+          {/* Certificações */}
           <div className="space-y-3 min-w-0">
             <div className="rounded-xl p-4 bg-white/5 border border-white/10">
               <div className="flex items-center gap-2 mb-2">
@@ -1068,7 +1241,9 @@ function AboutMe() {
               <div className="text-xs uppercase tracking-wider text-slate-300/80 mb-2">Soft skills</div>
               <div className="flex flex-wrap gap-2 text-sm">
                 {["Comunicação", "Colaboração", "Resolução de Problemas", "Curiosidade Técnica", "Atenção a Detalhes"].map((s) => (
-                  <span key={s} className="px-2.5 py-1 rounded-full bg-white/10">{s}</span>
+                  <span key={s} className="px-2.5 py-1 rounded-full bg-white/10">
+                    {s}
+                  </span>
                 ))}
               </div>
             </div>
@@ -1079,18 +1254,36 @@ function AboutMe() {
   );
 }
 
-/* ============================== DEV SMOKE ============================== */
+/* ============================== DEV SMOKE (testes leves) ============================== */
 function DevSmoke() {
   useEffect(() => {
     try {
+      // Seções principais
       console.assert(document.querySelector("#projetos") !== null, "[Smoke] Seção Projetos");
       console.assert(document.getElementById("scroll-progress-bar") !== null, "[Smoke] Progress bar");
       console.assert(document.getElementById("spotify-typing") !== null, "[Smoke] Spotify typing");
       console.assert(document.getElementById("spotify-card") !== null, "[Smoke] Spotify card");
       console.assert(document.getElementById("linkedin-glass") !== null, "[Smoke] LinkedIn card");
-} catch (err: unknown) {
-  console.error("[Achievements] fetch failed:", err);
-}
+
+      // 👇 Testes adicionais: Achievements e TCC
+      const stats = document.getElementById("achievements-stats");
+      console.assert(stats !== null, "[Smoke] Achievements container existe");
+      if (stats) {
+        console.assert(stats.children.length === 4, "[Smoke] Achievements deve ter 4 cards");
+        console.assert(
+          !!Array.from(stats.querySelectorAll("*")).find((el) => el.textContent?.includes("Desde")),
+          '[Smoke] Campo "Desde" visível'
+        );
+      }
+      const tccLink = document.querySelector<HTMLAnchorElement>('a[href*="projetomed.com.br/TECTI/2024/3TIC/grupo06/quickLocation/public"]');
+      console.assert(!!tccLink, "[Smoke] Link do site/demo do TCC presente");
+      const mvpChip = Array.from(document.querySelectorAll("span")).some((el) =>
+        el.textContent?.trim() === "MVP publicado"
+      );
+      console.assert(mvpChip, '[Smoke] Badge "MVP publicado" presente');
+    } catch (err) {
+      console.error("[DevSmoke] falhou:", err);
+    }
   }, []);
   return null;
 }
