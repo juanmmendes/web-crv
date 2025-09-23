@@ -597,15 +597,6 @@ function TechStack() {
     { icon: TerminalSquare, label: "CI/CD • Filas" },
     { icon: Network, label: "Integrações Multicanal" },
   ];
-  const studies = [
-    "Ciência de Dados",
-    "Inteligência Artificial",
-    "Business Intelligence",
-    "Automação",
-    "Engenharia de Software",
-    "Cloud Computing",
-    "Segurança da Informação",
-  ];
 
   return (
     <Card tilt>
@@ -619,13 +610,6 @@ function TechStack() {
             <s.icon className="w-4 h-4 text-teal-300 shrink-0" />
             <span className="text-sm break-words">{s.label}</span>
           </div>
-        ))}
-      </div>
-      <div className="mt-4 flex flex-wrap gap-2">
-        {studies.map((tag) => (
-          <span key={tag} className="text-xs px-2.5 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30">
-            {tag}
-          </span>
         ))}
       </div>
     </Card>
