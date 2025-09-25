@@ -877,7 +877,7 @@ function Education() {
         <ul className="space-y-4 min-w-0">
           <li>
             <div className="font-semibold break-words">Bacharelado — Sistemas da Informação (em curso)</div>
-            <div className="text-sm text-slate-300/80">Centro Universitário Adventista de São Paulo — fev/2025 a dez/2028</div>
+            <div className="text-sm text-slate-300/80">Centro Universitário Adventista de São Paulo — fev/2025 a dez/2029</div>
           </li>
           <li>
             <div className="font-semibold break-words">Técnico Integrado — Ciências da Computação e Informática</div>
